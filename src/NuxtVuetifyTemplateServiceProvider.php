@@ -23,8 +23,8 @@ class NuxtVuetifyTemplateServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('ViewMapping', function ($app) {
-            return new ViewMapping();
+        $this->app->singleton('ViewProcessor', function ($app) {
+            return new ViewProcessor();
         });
     }
 }

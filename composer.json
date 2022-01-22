@@ -8,9 +8,9 @@
         "generator",
         "vuetify",
         "nuxt",
-	      "templates",
+        "templates",
         "bootstrap",
-	      "vl-admin-tool"
+        "vl-admin-tool"
     ],
     "license": "MIT",
     "authors": [
