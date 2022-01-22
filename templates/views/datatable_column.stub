@@ -1,0 +1,11 @@
+'$FIELD_NAME$' => (new Column([
+$TABS$    'title' => $FK_PARENT_LANG$__('$NS_LOCALE_PREFIX$models/$MODEL_NAME_CAMEL$.fields.$LANG_FIELD_NAME$'),
+$TABS$    'data' => '$FIELD_NAME$',
+$TABS$    'searchable' => $SEARCHABLE$,
+$TABS$    'orderable' => $ORDERABLE$,
+$TABS$    'exportable' => $EXPORTABLE$,
+$TABS$    'printable' => $PRINTABLE$,
+$TABS$    'attributes' => [
+$TABS$        'class' => '$CSS_CLASS$'
+$TABS$    ],
+$TABS$]))
