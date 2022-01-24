@@ -1,40 +1,174 @@
-@extends('layouts.app')
+<template>
+  <v-card
+    elevation="2"
+    rounded="lg"
+    style="height: 100%;"
+  >
+    <BaseDataTable
+      height="70vh"
+      :headers="headers"
+      :search="search"
+      :items.sync="items"
+      :selected-rows.sync="selectedRows"
+      :draw.sync="draw"
+      :fetch-data-func="fetch$MODEL_NAME$"
+      :show-select="false"
+      @dblclick:row="showEditItemByDoubleClick"
+      :items-per-page.sync="itemsPerPage"
+    >
+      <template #top>
+        <BaseToolbar
+          :search.sync="search"
+          :dialog.sync="createDialog"
+          :items-per-page.sync="itemsPerPage"
+          :handle-refresh-fn="clearSelectionAndReload"
+          :handle-delete-fn="deleteSelectedRows"
+        >
+          <template #filters>
+            <$MODEL_NAME$FilterAndAction
+            />
+          </template>
+        </BaseToolbar>
+      </template>
+      <template #item.actions="{ item }">
+        <v-icon
+          small
+          class="orange--text"
+          @click.stop.prevent="showEditItem(item)"
+        >
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          small
+          class="red--text"
+          @click.stop.prevent="showDeleteItem(item)"
+        >
+          mdi-delete
+        </v-icon>
+      </template>
+    </BaseDataTable>
 
-@section('content-header')
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-4">
-                <h1>
-                    @lang('$NS_LOCALE_PREFIX$models/$MODEL_NAME_CAMEL$.plural')
-                </h1>
-            </div>
-            <div class="col-8">
-                <h1 class="float-right">
-                    <button type="button" class="btn btn-block btn-primary float-right btnAddNew$MODEL_NAME$"
-                            style="margin-top: -10px;margin-bottom: 5px"><i class="fas fa-plus"></i> @lang('crud.add_new')</button>
-                </h1>
-            </div>
-        </div>
-    </div><!-- /.container-fluid -->
-@endsection
+    <!--    region create modal-->
+    <BaseCreateOrUpdateModal
+      :is-show.sync="createDialog"
+      :form-title="$t('crud.add_new_title_modal', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
+      :data="selectedItem"
+      :handle-submit="addNewRecord"
+      :handle-cancel="resetSelectedRow"
+    >
+      <template #fields="{initData}">
+        <$MODEL_NAME$Fields :init-data="initData" :action-type="actionType"/>
+      </template>
+    </BaseCreateOrUpdateModal>
+    <!--    endregion create modal-->
 
-@section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                @include('$NS_VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.table_with_crud_modals')
-            </div>
-        </div>
-    </div>
-@endsection
+    <!--    region update modal-->
+    <BaseCreateOrUpdateModal
+      :is-show.sync="updateDialog"
+      :form-title="$t('crud.edit_title_modal', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
+      :data="selectedItem"
+      :handle-submit="updateRecord"
+      :handle-cancel="resetSelectedRow"
+    >
+      <template #fields="{initData}">
+        <$MODEL_NAME$Fields :init-data="initData" :action-type="actionType"/>
+      </template>
+    </BaseCreateOrUpdateModal>
+    <!--    endregion update modal-->
+  </v-card>
+</template>
 
-@push('scripts')
-    <script type="text/javascript">
-        $( document ).ready(function() {
-            $('.btnAddNew$MODEL_NAME$').on('click', (evt) => {
-                resetForm($MODEL_NAME_CAMEL$CreateForm);
-                $MODEL_NAME_CAMEL$CreateModal.modal('show');
-            });
-        });
-    </script>
-@endpush
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
+import headerDataTable from '~/datatables/$MODEL_NAME_DASHED$/header'
+import $MODEL_NAME$Service from '~/services/$MODEL_NAME_DASHED$'
+import useDataTable from '~/components/composables/useDataTable';
+import useCreateModal from '~/components/composables/useCreateModal';
+import useUpdateModal from '~/components/composables/useUpdateModal';
+import useConfirmDelete from '~/components/composables/useConfirmDelete';
+
+export default defineComponent({
+  layout: 'default',
+  computed: {
+  },
+  middleware: [
+    'auth'
+  ],
+  setup () {
+    // datatable init
+    const {
+      items,
+      itemsPerPage,
+      selectedItem,
+      selectedRows,
+      draw,
+      reloadTableFn,
+      resetSelectedRow,
+      clearSelectionAndReload
+    } = useDataTable()
+
+    // create modal
+    const { createDialog, actionType, addNewRecord } = useCreateModal({
+      createRecordFn: $MODEL_NAME$Service.addNew$MODEL_NAME$,
+      clearSelectionAndReloadFn: clearSelectionAndReload,
+    })
+
+    // update modal
+    const { updateDialog, showEditItem, updateRecord } = useUpdateModal({
+      updateRecordFn: $MODEL_NAME$Service.update$MODEL_NAME$,
+      selectedItem: selectedItem,
+      clearSelectionAndReloadFn: clearSelectionAndReload,
+      actionType: actionType,
+    })
+
+    const showEditItemByDoubleClick = (_: any, { item }: any) => {
+      showEditItem(item)
+    }
+
+    // delete confirm
+    const { showDeleteItem, deleteItemConfirm, deleteSelectedRows } = useConfirmDelete({
+      deleteRecordFn: $MODEL_NAME$Service.delete$MODEL_NAME$,
+      selectedItem: selectedItem,
+      selectedRows: selectedRows,
+      clearSelectionAndReloadFn: clearSelectionAndReload
+    })
+
+    return {
+      createDialog,
+      updateDialog,
+      selectedItem,
+      selectedRows,
+      actionType,
+      items,
+      draw,
+      itemsPerPage,
+      addNewRecord,
+      updateRecord,
+      reloadTableFn,
+      resetSelectedRow,
+      showEditItem,
+      showEditItemByDoubleClick,
+      showDeleteItem,
+      deleteItemConfirm,
+      clearSelectionAndReload,
+      deleteSelectedRows
+    }
+  },
+  data () {
+    return {
+      title: process.env.appName,
+      headers: headerDataTable(),
+      search: ''
+    }
+  },
+  head () {
+    return { title: 'home' }
+  },
+  methods: {
+    fetch$MODEL_NAME$: $MODEL_NAME$Service.fetch$MODEL_NAME$
+  }
+})
+</script>
+
+<style scoped>
+</style>

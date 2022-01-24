@@ -26,5 +26,9 @@ class NuxtVuetifyTemplateServiceProvider extends ServiceProvider
         $this->app->singleton('ViewProcessor', function ($app) {
             return new ViewProcessor();
         });
+
+        $this->app->singleton('TemplateGenerator', function ($app, $params) {
+            return new TemplateGenerator($params['commandData']);
+        });
     }
 }

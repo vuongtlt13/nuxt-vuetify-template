@@ -1,0 +1,41 @@
+<template>
+  <v-row>
+    $FIELD_DEFINITIONS$
+  </v-row>
+</template>
+
+<script lang="ts">
+import { defineComponent, Ref, watch } from '@vue/composition-api'
+import { useVModel } from '@vueuse/core'
+import $MODEL_NAME_CAMEL$ from '~/dto/$MODEL_NAME_DASHED$'
+
+export default defineComponent({
+  name: 'Fields',
+  props: {
+    initData: {
+      type: Object,
+      default: () => new $MODEL_NAME_CAMEL$()
+    },
+    onChange: {
+      type: Function,
+      default: null
+    }
+  },
+  setup (props, { emit }) {
+    const data: Ref<$MODEL_NAME_CAMEL$> = useVModel(props, 'initData', emit) as Ref<$MODEL_NAME_CAMEL$>
+    watch(data, (currentValue, _) => {
+      if (props.onChange) {
+        // @ts-ignore
+        props.onChange(currentValue)
+      }
+    })
+    return {
+      data
+    }
+  }
+})
+</script>
+
+<style scoped>
+
+</style>
