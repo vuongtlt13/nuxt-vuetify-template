@@ -9,14 +9,14 @@
               <br><br>
               <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
                 <form @submit.prevent="submit">
-                  <ValicationEmail
+                  <ValidationEmail
                     v-model="username"
                     rules="required|email|min:4"
                     name="username"
                     :label="$t('auth.username')"
                   />
 
-                  <ValicationPassowrd
+                  <ValidationPassword
                     v-model="password"
                     rules="required|min:6"
                     name="password"

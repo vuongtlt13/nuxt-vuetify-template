@@ -6,7 +6,8 @@ Vue.use(VueI18n)
 
 export const i18n = new VueI18n({
   locale: process.env.appLocale,
-  messages: {}
+  messages: {},
+  silentTranslationWarn: true
 })
 
 export default async ({ app, store }: any) => {

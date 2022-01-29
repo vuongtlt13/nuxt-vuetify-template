@@ -5,7 +5,7 @@
       sm="6"
       md="4"
     >
-      <InputTextFieldWithValidation
+      <ValidationText
         v-model="data.name"
         :label="$t('models.user.fields.name')"
         name="name"
@@ -17,7 +17,7 @@
       sm="6"
       md="4"
     >
-      <InputTextFieldWithValidation
+      <ValidationPassword
         v-model="data.password"
         :label="$t('models.user.fields.password')"
         name="password"
@@ -29,7 +29,7 @@
       sm="6"
       md="4"
     >
-      <InputTextFieldWithValidation
+      <ValidationEmail
         v-model="data.email"
         :label="$t('models.user.fields.email')"
         name="email"
@@ -42,9 +42,12 @@
 import { defineComponent, Ref, watch } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
 import User from '~/dto/user'
+import ValidationPassword from "~/components/validation/Password.vue";
+import ValidationEmail from "~/components/validation/Email.vue";
 
 export default defineComponent({
   name: 'Fields',
+  components: {ValidationEmail, ValidationPassword},
   props: {
     initData: {
       type: Object,

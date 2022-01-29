@@ -4,7 +4,7 @@
   sm="6"
   md="4"
 >
-  <InputSelect
+  <ValidationSelect
     v-model="data.$FIELD_NAME_CAMEL$"
     :label="$t('models.$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$')"
     name="$FIELD_NAME$"
