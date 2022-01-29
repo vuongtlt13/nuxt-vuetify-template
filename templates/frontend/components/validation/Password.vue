@@ -6,11 +6,11 @@
   >
     <v-text-field
       v-model="innerValue"
-      :type="type"
-      :label="label"
+      :type="showPassword ? 'text' : 'password'"
+      :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
       :error-messages="v.errors"
-      :success="v.valid"
-      :color="color"
+      :success="v.valid && v.validated && v.dirty && showSuccess"
+      @click:append="showPassword = !showPassword"
       v-bind="$attrs"
       v-on="$listeners"
     />
@@ -18,25 +18,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, ref } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'TextFieldWithValidation',
+  name: 'ValidationPassword',
   props: {
-    rules: { type: [Object, String], default: 'required' },
+    rules: { type: [Object, String], default: '' },
+    showSuccess: { type: Boolean, default: true },
     value: { type: String, default: '' },
     name: { type: String, required: true },
-    type: { type: String, default: 'text' },
-    label: { type: String, default: '' },
-    color: { type: String, default: '#00C853' }
   },
   setup (props) {
     const innerValue = useVModel(props, 'value')
-
+    const showPassword = ref<Boolean>(false)
     return {
-      innerValue
+      innerValue,
+      showPassword
     }
+  },
+  methods: {
   }
 })
 </script>

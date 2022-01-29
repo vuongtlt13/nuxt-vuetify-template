@@ -4,9 +4,9 @@
   sm="6"
   md="4"
 >
-  <InputTextFieldWithValidation
-    v-model="data.$FIELD_NAME_TITLE$"
-    rules="$FIELD_RULE$"
+  <InputText
+    v-model="data.$FIELD_NAME_CAMEL$"
+    rules="$FIELD_RULE$"$COUNTER_CONDITION$
     :label="$t('models.$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$')"
     name="$FIELD_NAME$"
   />

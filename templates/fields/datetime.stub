@@ -1,28 +1,12 @@
 <!-- $FIELD_NAME_TITLE$ Field -->
-<div class="form-group col-sm-6">
-    {!! Form::label('$FIELD_NAME$', __('$NS_LOCALE_PREFIX$models/$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$').':') !!}
-    <div class="input-group date" id="{{$action_type}}_$FIELD_NAME$_div" data-target-input="nearest">
-            <input type="text"
-                name="$FIELD_NAME$"
-                data-default-value="$FIELD_DEFAULT_VALUE$"
-                data-column="$FIELD_NAME$"
-                class="form-control datetimepicker-input"
-                data-toggle="datetimepicker"
-                data-target="#{{$action_type}}_$FIELD_NAME$_div"/>
-            <div class="input-group-append" data-target="#{{$action_type}}_$FIELD_NAME$_div" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-            </div>
-        </div>
-</div>
-
-@push('scripts')
-    <script type="text/javascript">
-        $(function () {
-            $('#{{$action_type}}_$FIELD_NAME$_div').datetimepicker({
-                icons: { time: 'far fa-clock' },
-                format: 'YYYY-MM-DD HH:mm:ss',
-                useCurrent: true
-            })
-        });
-    </script>
-@endpush
+<v-col
+  cols="12"
+  sm="6"
+  md="4"
+>
+  <InputDateTime
+    v-model="data.$FIELD_NAME_CAMEL$"
+    :label="$t('models.$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$')"
+    name="$FIELD_NAME$"
+  />
+</v-col>

@@ -1,12 +1,12 @@
 <!-- $FIELD_NAME_TITLE$ Field -->
-<div class="form-group col-sm-6">
-    <label class="checkbox-inline">
-        {!! Form::hidden('$FIELD_NAME$', 0, ['class' => 'ignore-reset']) !!}
-        {!! Form::checkbox(
-            '$FIELD_NAME$',
-            '$CHECKBOX_VALUE$',
-            null,
-            ['data-column' => '$FIELD_NAME$', 'data-default-value' => $FIELD_DEFAULT_VALUE$])
-        !!} {{__('$NS_LOCALE_PREFIX$models/$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$')}}
-    </label>
-</div>
+<v-col
+  cols="12"
+  sm="6"
+  md="4"
+>
+  <InputCheckbox
+    v-model="data.$FIELD_NAME_CAMEL$"
+    :label="$t('models.$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$')"
+    name="$FIELD_NAME$"
+  />
+</v-col>

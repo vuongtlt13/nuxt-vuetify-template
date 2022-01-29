@@ -42,3 +42,34 @@ export const diffTimeFromNow = (dtObj: moment.Moment): string => {
   const diffInYears = now.diff(dtObj, 'years')
   return i18n.tc('time.x_years_ago', diffInYears)
 }
+
+export const VNDateFormat = "DD/MM/YYYY"
+export const VNDashDateFormat = "DD-MM-YYYY"
+export const NoDashDateFormat = "YYYYMMDD"
+
+export const formatDate = (date: Date|moment.Moment, format: string) => {
+  let dateObj = moment(date)
+
+  return dateObj.format(format)
+}
+
+export const parseDate = (dateStr: string, format: string) => {
+  return moment(dateStr, format)
+}
+
+export const VNDateTimeFormat = "DD/MM/YYYY HH:mm:ss"
+export const VNDashDateTimeFormat = "DD-MM-YYYY HH:mm:ss"
+
+export const formatDateTime = (date: Date|moment.Moment, format: string) => {
+  let dateObj = moment(date)
+
+  return dateObj.format(format)
+}
+
+export const parseDateTime = (dateStr: string, format: string) => {
+  return moment(dateStr, format)
+}
+
+export const now = () => {
+  return moment();
+}

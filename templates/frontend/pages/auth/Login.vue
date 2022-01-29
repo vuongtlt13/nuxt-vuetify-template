@@ -9,20 +9,18 @@
               <br><br>
               <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
                 <form @submit.prevent="submit">
-                  <InputTextFieldWithValidation
+                  <ValicationEmail
                     v-model="username"
-                    rules="required|min:4"
+                    rules="required|email|min:4"
                     name="username"
                     :label="$t('auth.username')"
-                    type="text"
                   />
 
-                  <InputTextFieldWithValidation
+                  <ValicationPassowrd
                     v-model="password"
                     rules="required|min:6"
                     name="password"
                     :label="$t('auth.password')"
-                    type="password"
                   />
 
                   <v-btn
@@ -60,7 +58,7 @@ export default defineComponent({
       'check'
     ]),
     usernameField () {
-      return 'username'
+      return 'email'
     }
   },
   mounted () {
