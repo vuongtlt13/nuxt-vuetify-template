@@ -39,7 +39,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
-import useDateFormat from "~/components/composables/useDateFormat";
+import useDateFormat from "~/composables/useDateFormat";
 
 export default defineComponent({
   name: 'ValidationDate',

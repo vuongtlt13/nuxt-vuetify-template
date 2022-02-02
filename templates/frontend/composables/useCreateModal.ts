@@ -21,6 +21,7 @@ function useCreateModal<T>(option: UseCreateModalOption<T>) {
       callbackFn(resp, option.successCallbackOption)
       option.clearSelectionAndReloadFn()
       createDialog.value = false
+      return resp
     })
   }
 

@@ -18,6 +18,7 @@ function useConfirmDelete<T>(option: UseDeleteModalOption<T>) {
     return option.deleteRecordFn(data, false).then((resp) => {
       callbackFn(resp, option.successCallbackOption)
       option.clearSelectionAndReloadFn()
+      return resp
     })
   }
 

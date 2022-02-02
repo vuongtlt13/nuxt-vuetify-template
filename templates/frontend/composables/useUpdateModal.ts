@@ -28,6 +28,7 @@ function useUpdateModal<T>(option: UseUpdateModalOption<T>) {
       callbackFn(resp, option.successCallbackOption)
       option.clearSelectionAndReloadFn()
       updateDialog.value = false
+      return resp
     })
   }
 

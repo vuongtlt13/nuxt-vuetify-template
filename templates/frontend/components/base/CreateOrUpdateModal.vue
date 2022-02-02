@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUpdate, ref, toRef } from '@vue/composition-api'
-import { useVModel } from '@vueuse/core'
+import {defineComponent, onBeforeUpdate, ref, toRef} from '@vue/composition-api'
+import {useVModel} from '@vueuse/core'
 
 export default defineComponent({
   name: 'CreateOrUpdateModal',
@@ -71,7 +71,7 @@ export default defineComponent({
     }
   },
 
-  setup (props, context) {
+  setup(props, context) {
     const dialog = useVModel(props, 'isShow', context.emit)
     const innerData = toRef(props, 'data')
     const key = ref(null)
@@ -81,9 +81,7 @@ export default defineComponent({
     }
 
     onBeforeUpdate(() => {
-      if (key.value === undefined || key.value === null) {
-        key.value = innerData.value.id // TODO: handle multi keys
-      }
+      key.value = innerData.value.id // TODO: handle multi keys
     })
 
     return {
@@ -95,7 +93,7 @@ export default defineComponent({
   },
 
   methods: {
-    closeModal () {
+    closeModal() {
       this.dialog = false
       if (this.handleCancel) {
         // @ts-ignore
@@ -103,25 +101,35 @@ export default defineComponent({
       }
     },
 
-    callSubmitFn () {
+    callSubmitFn() {
       if (this.key !== undefined && this.key !== null) {
         // @ts-ignore
-        this.handleSubmit(this.key, this.innerData).catch(err => {
-          let errors = err.response.data.error;
-          if (errors) {
+        this.handleSubmit(this.key, this.innerData)
+          .then(() => {
             // @ts-ignore
-            this.$refs.obs.setErrors(errors)
-          }
-        })
+            this.$refs.obs.reset()
+          })
+          .catch((err: any) => {
+            let errors = err.response.data.error;
+            if (errors) {
+              // @ts-ignore
+              this.$refs.obs.setErrors(errors)
+            }
+          })
       } else {
         // @ts-ignore
-        this.handleSubmit(this.innerData).catch(err => {
-          let errors = err.response.data.error;
-          if (errors) {
+        this.handleSubmit(this.innerData)
+          .then(() => {
             // @ts-ignore
-            this.$refs.obs.setErrors(errors)
-          }
-        })
+            this.$refs.obs.reset()
+          })
+          .catch((err: any) => {
+            let errors = err.response.data.error;
+            if (errors) {
+              // @ts-ignore
+              this.$refs.obs.setErrors(errors)
+            }
+          })
       }
     }
   }

@@ -82,10 +82,10 @@
 import { defineComponent } from '@vue/composition-api'
 import headerDataTable from '~/datatables/user/header'
 import UserService from '~/services/user'
-import useDataTable from '~/components/composables/useDataTable';
-import useCreateModal from '~/components/composables/useCreateModal';
-import useUpdateModal from '~/components/composables/useUpdateModal';
-import useConfirmDelete from '~/components/composables/useConfirmDelete';
+import useDataTable from '~/composables/useDataTable';
+import useCreateModal from '~/composables/useCreateModal';
+import useUpdateModal from '~/composables/useUpdateModal';
+import useConfirmDelete from '~/composables/useConfirmDelete';
 
 export default defineComponent({
   layout: 'default',

@@ -7,14 +7,15 @@
 <script lang="ts">
 import { defineComponent, Ref, watch } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
-import $MODEL_NAME_CAMEL$ from '~/dto/$MODEL_NAME_DASHED$'
 
 export default defineComponent({
   name: 'Fields',
   props: {
     initData: {
       type: Object,
-      default: () => new $MODEL_NAME_CAMEL$()
+      default: () => {
+        return {}
+      }
     },
     onChange: {
       type: Function,
@@ -22,7 +23,7 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    const data: Ref<$MODEL_NAME_CAMEL$> = useVModel(props, 'initData', emit) as Ref<$MODEL_NAME_CAMEL$>
+    const data: Ref = useVModel(props, 'initData', emit) as Ref
     watch(data, (currentValue, _) => {
       if (props.onChange) {
         // @ts-ignore
