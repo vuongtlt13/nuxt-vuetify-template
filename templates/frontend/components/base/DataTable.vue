@@ -120,9 +120,7 @@ export default defineComponent({
     const totalItem = ref(0)
 
     const fetchData = async (options: DataOptions, keyword: string) => {
-      const resp = await (props.fetchDataFunc as DataTableFetchDataFunc)(options, keyword, props.headers)
-      const total = resp.data.data.recordsTotal
-      const items = resp.data.data.items
+      const {total, items} = await (props.fetchDataFunc as DataTableFetchDataFunc)(options, keyword, props.headers)
 
       return {
         items,

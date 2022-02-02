@@ -104,7 +104,7 @@ export const showNotificationFromErrorResponse = (error: any) => {
       text: resp.data.message || resp.data.error || error.toString(),
       duration: NOTIFICATION_DURATION
     })
-  } else if (resp.status === HttpCode.UNAUTHORIZED && $store.getters['auth/check']) {
+  } else if (resp.status === HttpCode.UNAUTHORIZED) {
     Vue.notify({
       type: 'warning',
       title: i18n.t('notification.token_expired_alert_title').toString(),

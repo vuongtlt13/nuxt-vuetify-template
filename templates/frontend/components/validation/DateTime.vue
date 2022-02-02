@@ -17,6 +17,7 @@
           v-model="formattedDateTime"
           persistent-hint
           prepend-icon="mdi-calendar"
+          readonly
           v-bind="{
             ...attrs,
             ...$attrs

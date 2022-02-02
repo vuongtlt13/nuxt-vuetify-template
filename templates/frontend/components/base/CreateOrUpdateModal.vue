@@ -47,7 +47,7 @@ export default defineComponent({
   name: 'CreateOrUpdateModal',
   props: {
     isShow: Boolean,
-    formTitle: { type: String, default: '' },
+    formTitle: {type: String, default: ''},
     width: {
       type: String,
       default: "70vw"
@@ -86,21 +86,11 @@ export default defineComponent({
       }
     })
 
-    const callSubmitFn = () => {
-      if (key.value !== undefined && key.value !== null) {
-        // @ts-ignore
-        props.handleSubmit(key.value, innerData.value)
-      } else {
-        // @ts-ignore
-        props.handleSubmit(innerData.value)
-      }
-    }
-
     return {
+      key,
       dialog,
       innerData,
       changeData,
-      callSubmitFn
     }
   },
 
@@ -110,6 +100,28 @@ export default defineComponent({
       if (this.handleCancel) {
         // @ts-ignore
         this.handleCancel(this.$refs.obs.reset())
+      }
+    },
+
+    callSubmitFn () {
+      if (this.key !== undefined && this.key !== null) {
+        // @ts-ignore
+        this.handleSubmit(this.key, this.innerData).catch(err => {
+          let errors = err.response.data.error;
+          if (errors) {
+            // @ts-ignore
+            this.$refs.obs.setErrors(errors)
+          }
+        })
+      } else {
+        // @ts-ignore
+        this.handleSubmit(this.innerData).catch(err => {
+          let errors = err.response.data.error;
+          if (errors) {
+            // @ts-ignore
+            this.$refs.obs.setErrors(errors)
+          }
+        })
       }
     }
   }

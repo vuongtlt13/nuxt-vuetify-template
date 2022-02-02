@@ -3,8 +3,8 @@ import { defaultSuccessCallbackFn, SuccessCallbackFunction } from '~/utils';
 import Vue from 'vue';
 import { i18n } from '~/plugins/i18n';
 
-interface UseDeleteModalOption {
-  deleteRecordFn: (data: any, isSilent: boolean) => Promise<any>
+interface UseDeleteModalOption<T> {
+  deleteRecordFn: (data: T, isSilent: boolean) => Promise<any>
   selectedItem: Ref,
   selectedRows: Ref,
   clearSelectionAndReloadFn: any,
@@ -12,10 +12,10 @@ interface UseDeleteModalOption {
   successCallbackOption?: any
 }
 
-const useConfirmDelete = (option: UseDeleteModalOption) => {
-  const deleteItemConfirm = (data: any, isReload = true) => {
+function useConfirmDelete<T>(option: UseDeleteModalOption<T>) {
+  const deleteItemConfirm = (data: T, isReload = true) => {
     const callbackFn = option.successCallbackFn || defaultSuccessCallbackFn
-    option.deleteRecordFn(data, false).then((resp) => {
+    return option.deleteRecordFn(data, false).then((resp) => {
       callbackFn(resp, option.successCallbackOption)
       option.clearSelectionAndReloadFn()
     })
@@ -31,15 +31,15 @@ const useConfirmDelete = (option: UseDeleteModalOption) => {
       showCancelButton: true
     }).then(({ isConfirmed }) => {
       if (isConfirmed) {
-        deleteItemConfirm(item);
+        return deleteItemConfirm(item);
       }
     });
   }
 
   const deleteSelectedRows = () => {
-    option.selectedRows.value.map((item: any, index: number) => {
+    return option.selectedRows.value.map((item: any, index: number) => {
       let isReload = index == option.selectedRows.value.length - 1;
-      deleteItemConfirm(item, isReload)
+      return deleteItemConfirm(item, isReload)
     })
   }
 

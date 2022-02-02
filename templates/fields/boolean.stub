@@ -1,8 +1,12 @@
-<!-- 'Boolean FIELD_NAME_TITLE$ Field' checked by default -->
-<div class="form-group col-sm-6">
-    {!! Form::label('$FIELD_NAME$', __('$NS_LOCALE_PREFIX$models/$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$').':') !!}
-    <label class="checkbox-inline">
-   {!! Form::checkbox('$FIELD_NAME$', 1, true) !!}
-   <!-- remove {, true} to make it unchecked by default -->
-    </label>
-</div>
+<!-- $FIELD_NAME_TITLE$ Field -->
+<v-col
+  cols="12"
+  sm="6"
+  md="4"
+>
+  <ValidationCheckbox
+    v-model="data.$FIELD_NAME$"
+    :label="$t('models.$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$')"
+    name="$FIELD_NAME$"
+  />
+</v-col>

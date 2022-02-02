@@ -1,13 +1,12 @@
 import Cookies from 'js-cookie'
 import { plainToInstance } from 'class-transformer'
 import { cookieFromRequest } from '~/utils'
-import Notification from '~/dto/notification'
 import NotificationService from '~/services/notification'
 
 interface RootState {
   drawer: boolean,
   useMini: boolean,
-  notifications: Array<Notification>
+  notifications: Array<any>
 }
 
 export const state: () => RootState = () => ({
@@ -20,7 +19,7 @@ export const getters = {
   isDrawer: (state: RootState) => state.drawer,
   isUseMini: (state: RootState) => state.useMini,
   notifications: (state: RootState) => state.notifications,
-  unreadNotificationCount: (state: RootState) => state.notifications.filter((noti: Notification) => !noti.isRead).length
+  unreadNotificationCount: (state: RootState) => state.notifications.filter((noti: any) => !noti.isRead).length
 }
 
 export const mutations = {
@@ -30,10 +29,10 @@ export const mutations = {
   SET_DRAWER (state: RootState, value: boolean) {
     state.drawer = value
   },
-  FETCH_NOTIFICATIONS (state: RootState, notifications: Array<Notification>) {
+  FETCH_NOTIFICATIONS (state: RootState, notifications: Array<any>) {
     state.notifications = notifications
   },
-  MARK_READ_NOTIFICATION (state: RootState, destNoti: Notification) {
+  MARK_READ_NOTIFICATION (state: RootState, destNoti: any) {
     state.notifications.map((noti) => {
       if (noti.id === destNoti.id) {
         noti.isRead = true

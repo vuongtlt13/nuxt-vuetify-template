@@ -27,6 +27,10 @@ const UserService = {
         sb: finalSortBy,
         sd: finalSortDesc
       }
+    }).then((resp) => {
+      let total = resp.data.data.recordsTotal;
+      let items = resp.data.data.items;
+      return {total, items}
     })
   },
 

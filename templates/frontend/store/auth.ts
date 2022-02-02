@@ -1,11 +1,10 @@
 import Cookies from 'js-cookie'
 import { $axios } from '~/utils/api'
-import User from '~/dto/user'
 import AuthService from '~/services/auth'
 import { TOKEN_KEY } from '~/utils/constants'
 
 interface AuthState {
-  user: User|null,
+  user: any|null,
   token: string|null
 }
 
@@ -23,7 +22,7 @@ export const getters = {
     const tokenInCookie = Cookies.get(TOKEN_KEY)
     return state.token || tokenInCookie
   },
-  check: (state: AuthState) => state.user !== null && state.user.name !== ''
+  check: (state: AuthState) => state.user && state.user.name
 }
 
 // mutations

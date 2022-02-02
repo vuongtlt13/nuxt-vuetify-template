@@ -29,7 +29,7 @@ const headerDataTable = (): DataTableHeader[] => [
     text: i18n.t('models.user.fields.email_verified_at').toString(),
     align: 'center',
     sortable: true,
-    value: 'emailVerifiedAt',
+    value: 'email_verified_at',
     class: 'v-header'
   },
   {

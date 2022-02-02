@@ -51,7 +51,7 @@
     <!--    region create modal-->
     <BaseCreateOrUpdateModal
       :is-show.sync="createDialog"
-      :form-title="$t('crud.add_new_title_modal', { model: 'user' })"
+      :form-title="$t('crud.add_new_title_modal', { model: $t('models.user.singular') })"
       :data="selectedItem"
       :handle-submit="addNewRecord"
       :handle-cancel="resetSelectedRow"
@@ -65,7 +65,7 @@
     <!--    region update modal-->
     <BaseCreateOrUpdateModal
       :is-show.sync="updateDialog"
-      :form-title="$t('crud.edit_title_modal', { model: 'user' })"
+      :form-title="$t('crud.edit_title_modal', { model: $t('models.user.singular') })"
       :data="selectedItem"
       :handle-submit="updateRecord"
       :handle-cancel="resetSelectedRow"
@@ -79,7 +79,6 @@
 </template>
 
 <script lang="ts">
-import { mapGetters } from 'vuex'
 import { defineComponent } from '@vue/composition-api'
 import headerDataTable from '~/datatables/user/header'
 import UserService from '~/services/user'
@@ -90,10 +89,8 @@ import useConfirmDelete from '~/components/composables/useConfirmDelete';
 
 export default defineComponent({
   layout: 'default',
+  name: 'PageUser',
   computed: {
-    ...mapGetters({
-      authenticated: 'auth/check'
-    })
   },
   middleware: [
     'auth'
