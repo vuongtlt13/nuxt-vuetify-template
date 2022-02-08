@@ -53,11 +53,12 @@
       :is-show.sync="createDialog"
       :form-title="$t('crud.add_new_title_modal', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
       :data="selectedItem"
+      :options="createOptions"
       :handle-submit="addNewRecord"
       :handle-cancel="resetSelectedRow"
     >
-      <template #fields="{initData}">
-        <$MODEL_NAME$Fields :init-data="initData" :action-type="actionType"/>
+      <template #fields="{initData, options}">
+        <$MODEL_NAME$Fields :init-data="initData" :options="options" :action-type="actionType"/>
       </template>
     </BaseCreateOrUpdateModal>
     <!--    endregion create modal-->
@@ -67,11 +68,12 @@
       :is-show.sync="updateDialog"
       :form-title="$t('crud.edit_title_modal', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
       :data="selectedItem"
+      :options="updateOptions"
       :handle-submit="updateRecord"
       :handle-cancel="resetSelectedRow"
     >
-      <template #fields="{initData}">
-        <$MODEL_NAME$Fields :init-data="initData" :action-type="actionType"/>
+      <template #fields="{initData, options}">
+        <$MODEL_NAME$Fields :init-data="initData" :options=options :action-type="actionType"/>
       </template>
     </BaseCreateOrUpdateModal>
     <!--    endregion update modal-->
@@ -108,22 +110,20 @@ export default defineComponent({
     } = useDataTable()
 
     // create modal
-    const { createDialog, actionType, addNewRecord } = useCreateModal({
+    const { createDialog, actionType, addNewRecord, createOptions } = useCreateModal({
+      loadCreateOptionFn: $MODEL_NAME$Service.loadCreate$MODEL_NAME$Option,
       createRecordFn: $MODEL_NAME$Service.addNew$MODEL_NAME$,
       clearSelectionAndReloadFn: clearSelectionAndReload,
     })
 
     // update modal
-    const { updateDialog, showEditItem, updateRecord } = useUpdateModal({
+    const { updateDialog, showEditItem, showEditItemByDoubleClick, updateRecord, updateOptions } = useUpdateModal({
+      loadUpdateOptionFn: $MODEL_NAME$Service.loadUpdate$MODEL_NAME$Option,
       updateRecordFn: $MODEL_NAME$Service.update$MODEL_NAME$,
       selectedItem: selectedItem,
       clearSelectionAndReloadFn: clearSelectionAndReload,
       actionType: actionType,
     })
-
-    const showEditItemByDoubleClick = (_: any, { item }: any) => {
-      showEditItem(item)
-    }
 
     // delete confirm
     const { showDeleteItem, deleteItemConfirm, deleteSelectedRows } = useConfirmDelete({
@@ -141,6 +141,8 @@ export default defineComponent({
       actionType,
       items,
       draw,
+      createOptions,
+      updateOptions,
       itemsPerPage,
       addNewRecord,
       updateRecord,

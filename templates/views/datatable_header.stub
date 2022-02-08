@@ -1,0 +1,15 @@
+import { i18n } from '~/plugins/i18n'
+import { DataTableHeader } from 'vuetify';
+
+const headerDataTable = (): DataTableHeader[] => [
+  $HEADER_FIELDS$,
+  {
+    text: i18n.t('crud.action').toString(),
+    value: 'actions',
+    sortable: false,
+    class: 'v-header',
+    align: 'center'
+  }
+]
+
+export default headerDataTable

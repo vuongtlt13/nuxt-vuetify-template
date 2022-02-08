@@ -12,7 +12,7 @@
 
         <v-card-text>
           <v-container>
-            <slot name="fields" :init-data="innerData" :on-change="changeData"/>
+            <slot name="fields" :init-data="innerData" :options="options" :on-change="changeData"/>
           </v-container>
         </v-card-text>
 
@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onBeforeUpdate, ref, toRef} from '@vue/composition-api'
-import {useVModel} from '@vueuse/core'
+import { defineComponent, onBeforeUpdate, ref, toRef } from '@vue/composition-api'
+import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
   name: 'CreateOrUpdateModal',
@@ -59,6 +59,13 @@ export default defineComponent({
     data: {
       type: Object,
       default: () => {
+        return {}
+      }
+    },
+    options: {
+      type: Object,
+      default: () => {
+        return {}
       }
     },
     handleSubmit: {
@@ -71,7 +78,7 @@ export default defineComponent({
     }
   },
 
-  setup(props, context) {
+  setup (props, context) {
     const dialog = useVModel(props, 'isShow', context.emit)
     const innerData = toRef(props, 'data')
     const key = ref(null)
@@ -91,9 +98,8 @@ export default defineComponent({
       changeData,
     }
   },
-
   methods: {
-    closeModal() {
+    closeModal () {
       this.dialog = false
       if (this.handleCancel) {
         // @ts-ignore
@@ -101,7 +107,7 @@ export default defineComponent({
       }
     },
 
-    callSubmitFn() {
+    callSubmitFn () {
       if (this.key !== undefined && this.key !== null) {
         // @ts-ignore
         this.handleSubmit(this.key, this.innerData)

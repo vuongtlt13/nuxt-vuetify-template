@@ -1,0 +1,65 @@
+import { DataOptions, DataTableHeader } from 'vuetify'
+import { $axios, $silentAxios } from '~/utils/api'
+import { cloneObject, findIndexInHeader } from '~/utils';
+
+const $MODEL_NAME$Service = {
+  async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[]) {
+    const clone = cloneObject(options);
+    const { page, itemsPerPage, sortBy, sortDesc } = clone
+    keyword = keyword.trim()
+    let finalSortBy = sortBy.map((value: string) => {
+      return findIndexInHeader(value, headers)
+    })
+    let finalSortDesc = sortDesc.map((value: boolean) => {
+      return value ? "desc" : "asc"
+    });
+
+    if (finalSortBy.includes(-1)) {
+      finalSortBy = null;
+      finalSortDesc = null
+    }
+    return await $silentAxios.get('/$MODEL_NAME_PLURAL_DASHED$', {
+      params: {
+        q: keyword,
+        s: Math.max((page - 1) * itemsPerPage, 0),
+        ipp: itemsPerPage,
+        sb: finalSortBy,
+        sd: finalSortDesc
+      }
+    }).then((resp) => {
+      let total = resp.data.data.recordsTotal;
+      let items = resp.data.data.items;
+      return {total, items}
+    })
+  },
+
+  async loadCreate$MODEL_NAME$Option (params: any) {
+    return await $silentAxios.get('/$MODEL_NAME_PLURAL_DASHED$/create', {
+      params
+    })
+  },
+
+  async loadUpdate$MODEL_NAME$Option (id: any, params: any) {
+    return await $silentAxios.get(`/$MODEL_NAME_PLURAL_DASHED$/${id}/edit`, {
+      params
+    })
+  },
+
+  async addNew$MODEL_NAME$ (data: any) {
+    return await $axios.post('/$MODEL_NAME_PLURAL_DASHED$', data)
+  },
+
+  async update$MODEL_NAME$ (id: any, data: any) {
+    return await $axios.put(`/$MODEL_NAME_PLURAL_DASHED$/${id}`, data)
+  },
+
+  async delete$MODEL_NAME$ (data: any, isSilent = false) {
+    let axios = $axios
+    if (isSilent) {
+      axios = $silentAxios
+    }
+    return await axios.delete(`/$MODEL_NAME_PLURAL_DASHED$/${data.id}`)
+  }
+}
+
+export default $MODEL_NAME$Service

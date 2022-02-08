@@ -42,11 +42,45 @@ class TemplateGenerator extends BaseGenerator {
     }
 
     private function generateDataTable() {
+        FileUtil::createDirectoryIfNotExist($this->datatablePath());
         $this->generateHeader();
     }
 
     private function generateHeader() {
+        $this->renderCodeFromTemplate(
+            'views.datatable_header',
+            $this->templateType,
+            'header.ts',
+            $this->datatablePath(),
+            [
+                '$HEADER_FIELDS$' => $this->generateDataTableHeaderColumns()
+            ]
+        );
+    }
 
+    private function generateDataTableHeaderColumns() {
+        $fieldContents = [];
+        $headerFieldTemplate = get_template('views.datatable_header_column', $this->templateType);
+        $headerFieldTemplate = trim($headerFieldTemplate, "\n");
+
+        foreach ($this->commandData->fields as $field) {
+            if (!$field->isShowable) continue;
+            $fieldColumn = fill_template([
+                '$ORDERABLE$' => $field->isOrderable ? "true" : "false",
+                '$CSS_CLASS$' => $field->cssClasses,
+            ], $headerFieldTemplate);
+
+            $fieldColumn = fill_template_with_field_data(
+                $this->commandData->dynamicVars,
+                $this->commandData->fieldNamesMapping,
+                $fieldColumn,
+                $field
+            );
+
+            $fieldContents[] = $fieldColumn;
+        }
+        $headerContent = implode(",", $fieldContents);
+        return prefix_tabs_each_line($headerContent, 1, 2);
     }
 
     private function generateIndexPage() {
@@ -61,6 +95,10 @@ class TemplateGenerator extends BaseGenerator {
 
     private function pagePath() {
         return FileUtil::joinPath($this->basePath, "pages", $this->commandData->config->mDashedPlural);
+    }
+
+    private function datatablePath() {
+        return FileUtil::joinPath($this->basePath, "datatables", $this->commandData->config->mDashed);
     }
 
     private function generateFields() {
@@ -126,14 +164,32 @@ class TemplateGenerator extends BaseGenerator {
         return $basePath;
     }
 
+    private function servicePath() {
+        return FileUtil::joinPath($this->basePath, "services");
+    }
+
     private function generateDTO() {
 
     }
 
     private function generateToolbar() {
+        $this->renderCodeFromTemplate(
+            'views.toolbar',
+            $this->templateType,
+            'FilterAndAction.vue',
+            $this->componentPath(),
+        );
     }
 
     private function generateService() {
+        $filename = fill_template($this->commandData->dynamicVars, '$MODEL_NAME_DASHED$.ts');
+
+        $this->renderCodeFromTemplate(
+            'views.service',
+            $this->templateType,
+            $filename,
+            $this->servicePath(),
+        );
     }
 
     private function generateVeeValidationRule(GeneratorField $field) {

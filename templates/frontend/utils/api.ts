@@ -5,9 +5,11 @@ import { showNotificationFromErrorResponse, showNotificationFromResponse } from 
 
 // eslint-disable-next-line import/no-mutable-exports
 let $axios: NuxtAxiosInstance
+let $silentAxios: NuxtAxiosInstance
 
 export function initializeAxios (axiosInstance: NuxtAxiosInstance) {
   $axios = axiosInstance
+  $silentAxios = silentAxios()
 }
 
 export function addDefaultRequestInterception (axios: NuxtAxiosInstance) {
@@ -65,4 +67,23 @@ export const silentAxios = () => {
   return newAxios
 }
 
-export { $axios }
+export const convertToVSelectOption = (options: any): object => {
+  let selectOptions = [] as any[]
+  Object.keys(options).forEach((key) => {
+    selectOptions.push({
+      text: options[key],
+      value: key
+    })
+  })
+
+  return selectOptions
+}
+
+export const makeOptionFromResponse = (optionResp: any) => {
+  let finalOptionResp = {} as any
+  Object.keys(optionResp).forEach((key) => {
+    finalOptionResp[key] = convertToVSelectOption(optionResp[key])
+  })
+  return finalOptionResp
+}
+export { $axios, $silentAxios }
