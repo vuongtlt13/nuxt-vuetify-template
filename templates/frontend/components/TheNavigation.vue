@@ -6,12 +6,7 @@
     app
     clipped
   >
-    <v-list
-      nav
-      dense
-    >
-      <TheMenu />
-    </v-list>
+    <TheMenu />
   </v-navigation-drawer>
 </template>
 

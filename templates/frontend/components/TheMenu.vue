@@ -1,40 +1,68 @@
 <template>
-  <v-list-item-group>
-    <v-list-item to="/" active-class="light-blue lighten-4 text--accent-4">
-      <v-list-item-icon>
-        <v-icon>mdi-home</v-icon>
-      </v-list-item-icon>
-      <v-list-item-title>Home</v-list-item-title>
-    </v-list-item>
+  <v-list
+    nav
+    dense
+    shaped
+  >
+    <v-list-item-group>
+      <MenuNoChild
+        to="/"
+        activeClass="light-blue lighten-4 text--accent-4"
+        icon="mdi-home"
+        :title="$t('app.homepage')"
+      />
 
-    <v-list-item :to="{name: 'users'}" active-class="light-blue lighten-4 text--accent-4">
-      <v-list-item-icon>
-        <v-icon>mdi-account</v-icon>
-      </v-list-item-icon>
-      <v-list-item-title>User</v-list-item-title>
-    </v-list-item>
+      <template v-for="menu in menuComponents">
+        <MenuNoChild v-if="menu.type === MenuType.NO_CHILD"
+                     :to="menu.to"
+                     :title="menu.title"
+                     :active-class="menu.activeClass"
+                     :icon="menu.icon"
+        />
+        <MenuHasChild v-else-if="menu.type === MenuType.HAS_CHILD"
+                     :to="menu.to"
+                     :title="menu.title"
+                     :active-class="menu.activeClass"
+                     :icon="menu.icon"
+                     :children="menu.children"
+        />
+      </template>
 
-    <v-list-item :inactive="true" class="no-active" @click="toggleUseMini">
-      <v-list-item-icon>
-        <v-icon v-if="isUseMini">
-          mdi-chevron-double-right
-        </v-icon>
-        <v-icon v-if="!isUseMini">
-          mdi-chevron-double-left
-        </v-icon>
-      </v-list-item-icon>
-      <v-list-item-title>Collapse</v-list-item-title>
-    </v-list-item>
-  </v-list-item-group>
+      <v-list-item :inactive="true" class="no-active" @click="toggleUseMini">
+        <v-list-item-title>
+          <v-icon v-if="isUseMini">
+            mdi-chevron-double-right
+          </v-icon>
+          <v-icon v-if="!isUseMini">
+            mdi-chevron-double-left
+          </v-icon>
+        </v-list-item-title>
+      </v-list-item>
+    </v-list-item-group>
+  </v-list>
 </template>
 
 <script lang="ts">
 
 import { mapGetters, mapActions } from 'vuex'
 import { defineComponent } from '@vue/composition-api'
+import menuComponents from '~/utils/menu';
+import MenuNoChild from '~/components/menu/NoChild.vue';
+import MenuHasChild from '~/components/menu/HasChild.vue';
+import { MenuType } from '~/utils/constants';
 
 export default defineComponent({
   name: 'TheMenu',
+  components: {
+    MenuNoChild,
+    MenuHasChild
+  },
+  data () {
+    return {
+      menuComponents,
+      MenuType
+    }
+  },
   computed: {
     ...mapGetters([
       'isUseMini'

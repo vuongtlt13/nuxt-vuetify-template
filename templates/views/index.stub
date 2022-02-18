@@ -91,6 +91,12 @@ import useConfirmDelete from '~/composables/useConfirmDelete';
 
 export default defineComponent({
   layout: 'default',
+  name: 'Page$MODEL_NAME$',
+    meta: {
+      rp: [
+        "$MODEL_NAME_PLURAL_DASHED$.index"
+      ]
+    },
   computed: {
   },
   middleware: [

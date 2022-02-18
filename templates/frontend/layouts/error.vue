@@ -1,10 +1,7 @@
 <template>
   <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
+    <h1>
+      {{ errorMessage }}
     </h1>
     <NuxtLink to="/">
       Home page
@@ -14,6 +11,8 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
+import { HttpCode } from '~/utils/constants';
+import { i18n } from '~/plugins/i18n';
 
 export default defineComponent({
   layout: 'empty',
@@ -25,14 +24,17 @@ export default defineComponent({
   },
 
   data () {
-    return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
-    }
+    return {}
   },
 
+  computed: {
+    errorMessage(): string {
+      if (this.error.statusCode == HttpCode.NOT_FOUND) return i18n.t("auth.not_found").toString()
+      return this.error.message || i18n.t("auth.unknown_error").toString()
+    }
+  },
   head () {
-    const title: string = this.error.statusCode === 404 ? this.pageNotFound : this.otherError
+    const title: string = this.error.statusCode == HttpCode.NOT_FOUND ? this.errorMessage : i18n.t("auth.unknown_error").toString()
     return {
       title
     }

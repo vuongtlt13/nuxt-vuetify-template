@@ -90,6 +90,11 @@ import useConfirmDelete from '~/composables/useConfirmDelete';
 export default defineComponent({
   layout: 'default',
   name: 'PageUser',
+  meta: {
+    rp: [
+      "users.index"
+    ]
+  },
   computed: {
   },
   middleware: [

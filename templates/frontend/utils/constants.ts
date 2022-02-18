@@ -6,6 +6,11 @@ export enum ModalActionType {
   UPDATE = 'UPDATE',
 }
 
+export enum MenuType {
+  NO_CHILD = 'NO_CHILD',
+  HAS_CHILD = 'HAS_CHILD',
+}
+
 export enum HttpCode {
   SUCCESS = 200,
 
