@@ -24,6 +24,18 @@
         </v-icon>
       </v-btn>
       <v-btn
+        v-if="showImportDialog"
+        color="primary"
+        dark
+        x-small
+        class="my-auto toolbar-button"
+        @click="showImportDialog"
+      >
+        <v-icon small>
+          mdi-tray-arrow-up
+        </v-icon>
+      </v-btn>
+      <v-btn
         color="primary"
         dark
         x-small
@@ -70,6 +82,7 @@ export default defineComponent({
   name: 'Toolbar',
   props: {
     dialog: { type: Boolean, required: true },
+    showImportDialog: { type: Function, default: null },
     handleRefreshFn: {
       type: Function, default: () => {
       }
@@ -108,6 +121,7 @@ export default defineComponent({
     const showCreateOrUpdate = () => {
       syncDialog.value = true
     }
+
     return {
       syncDialog,
       innerSearch,

@@ -111,8 +111,9 @@ export const showNotificationFromErrorResponse = (error: any) => {
       text: i18n.t('notification.token_expired_alert_text').toString(),
       duration: NOTIFICATION_DURATION
     })
-    $store.commit('auth/LOGOUT')
-    return $redirect({ name: 'login' })
+    $store.dispatch('auth/logout').finally(() => {
+      $redirect('auth/login')
+    })
   } else {
     Vue.notify({
       type: 'error',

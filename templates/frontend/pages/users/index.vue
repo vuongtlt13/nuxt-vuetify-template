@@ -22,7 +22,7 @@
           :dialog.sync="createDialog"
           :items-per-page.sync="itemsPerPage"
           :handle-refresh-fn="clearSelectionAndReload"
-          :handle-delete-fn="deleteSelectedRows"
+          :handle-delete-fn="showDeleteItemsConfirm"
         >
           <template #filters>
             <UserFilterAndAction
@@ -41,7 +41,7 @@
         <v-icon
           small
           class="red--text"
-          @click.stop.prevent="showDeleteItem(item)"
+          @click.stop.prevent="showDeleteItemConfirm(item)"
         >
           mdi-delete
         </v-icon>
@@ -114,25 +114,23 @@ export default defineComponent({
     } = useDataTable()
 
     // create modal
-    const { createDialog, actionType, addNewRecord } = useCreateModal({
+    const { createDialog, actionType, addNewRecord, createOptions } = useCreateModal({
+      loadCreateOptionFn: UserService.loadCreateUserOption,
       createRecordFn: UserService.addNewUser,
       clearSelectionAndReloadFn: clearSelectionAndReload,
     })
 
     // update modal
-    const { updateDialog, showEditItem, updateRecord } = useUpdateModal({
+    const { updateDialog, showEditItem, showEditItemByDoubleClick, updateRecord, updateOptions } = useUpdateModal({
+      loadUpdateOptionFn: UserService.loadUpdateUserOption,
       updateRecordFn: UserService.updateUser,
       selectedItem: selectedItem,
       clearSelectionAndReloadFn: clearSelectionAndReload,
       actionType: actionType,
     })
 
-    const showEditItemByDoubleClick = (_: any, { item }: any) => {
-      showEditItem(item)
-    }
-
     // delete confirm
-    const { showDeleteItem, deleteItemConfirm, deleteSelectedRows } = useConfirmDelete({
+    const { showDeleteItemConfirm, deleteItem, showDeleteItemsConfirm, deleteSelectedRows } = useConfirmDelete({
       deleteRecordFn: UserService.deleteUser,
       selectedItem: selectedItem,
       selectedRows: selectedRows,
@@ -147,6 +145,8 @@ export default defineComponent({
       actionType,
       items,
       draw,
+      createOptions,
+      updateOptions,
       itemsPerPage,
       addNewRecord,
       updateRecord,
@@ -154,10 +154,11 @@ export default defineComponent({
       resetSelectedRow,
       showEditItem,
       showEditItemByDoubleClick,
-      showDeleteItem,
-      deleteItemConfirm,
+      showDeleteItemConfirm,
+      showDeleteItemsConfirm,
+      deleteItem,
       clearSelectionAndReload,
-      deleteSelectedRows
+      deleteSelectedRows,
     }
   },
   data () {

@@ -63,7 +63,7 @@ export const actions = {
 
       commit('FETCH_USER_SUCCESS', data)
     } catch (e) {
-      Cookies.remove('token')
+      Cookies.remove(TOKEN_KEY)
 
       commit('FETCH_USER_FAILURE')
     }
@@ -74,12 +74,11 @@ export const actions = {
   },
 
   async logout ({ commit }: any) {
-    try {
-      await $axios.post('/logout')
-    } catch (e) { }
-
-    Cookies.remove('token')
-
-    commit('LOGOUT')
+    await ($axios.create()).post('/logout').catch(() => {}).finally(
+      () => {
+        Cookies.remove(TOKEN_KEY)
+        commit('LOGOUT')
+      }
+    )
   }
 }

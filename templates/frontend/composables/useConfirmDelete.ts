@@ -2,9 +2,11 @@ import { Ref } from '@vue/composition-api';
 import { defaultSuccessCallbackFn, SuccessCallbackFunction } from '~/utils';
 import Vue from 'vue';
 import { i18n } from '~/plugins/i18n';
+import { AxiosOption, JobStatus } from '~/types';
+import { JobHandler, wrappedAxiosHandler } from '~/utils/job-handler';
 
 interface UseDeleteModalOption<T> {
-  deleteRecordFn: (data: T, isSilent: boolean) => Promise<any>
+  deleteRecordFn: (data: T, axiosOpts?: AxiosOption) => Promise<any>
   selectedItem: Ref,
   selectedRows: Ref,
   clearSelectionAndReloadFn: any,
@@ -12,16 +14,16 @@ interface UseDeleteModalOption<T> {
   successCallbackOption?: any
 }
 
-function useConfirmDelete<T>(option: UseDeleteModalOption<T>) {
-  const deleteItemConfirm = (data: T, isReload = true) => {
+function useConfirmDelete<T> (option: UseDeleteModalOption<T>) {
+  const deleteItem = (data: T, isReload = false, axiosOpts?: AxiosOption) => {
     const callbackFn = option.successCallbackFn || defaultSuccessCallbackFn
-    return option.deleteRecordFn(data, false).then((resp) => {
+    return option.deleteRecordFn(data, axiosOpts).then((resp) => {
       callbackFn(resp, option.successCallbackOption)
-      option.clearSelectionAndReloadFn()
+      if (isReload) option.clearSelectionAndReloadFn()
     })
   }
 
-  const showDeleteItem = (item: never) => {
+  const showDeleteItemConfirm = (item: never) => {
     option.selectedItem.value = Object.assign({}, item)
     Vue.swal.fire({
       title: i18n.t('crud.delete_title').toString(),
@@ -31,21 +33,52 @@ function useConfirmDelete<T>(option: UseDeleteModalOption<T>) {
       showCancelButton: true
     }).then(({ isConfirmed }) => {
       if (isConfirmed) {
-        return deleteItemConfirm(item);
+        return deleteItem(item, true);
       }
     });
   }
 
+  const showDeleteItemsConfirm = () => {
+    Vue.swal.fire({
+      title: i18n.t('crud.delete_title').toString(),
+      text: i18n.t('crud.confirm_delete_multi_text').toString(),
+      icon: 'error',
+      confirmButtonText: 'OK',
+      showCancelButton: true
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) {
+        return deleteSelectedRows();
+      }
+    });
+  }
+
+  const handlerFn = async (data: any) => {
+    return wrappedAxiosHandler(deleteItem(data.item, data.isReload, {
+        notifyWhenSuccess: false,
+        notifyWhenError: false
+      }
+    ))
+  }
+
   const deleteSelectedRows = () => {
-    return option.selectedRows.value.map((item: any, index: number) => {
-      let isReload = index == option.selectedRows.value.length - 1;
-      return deleteItemConfirm(item, isReload)
-    })
+    const jobHandler = new JobHandler(
+      handlerFn,
+      undefined,
+      option.selectedRows.value.map((item: any, index: number) => {
+        let isReload = index == option.selectedRows.value.length - 1;
+        return { item, isReload }
+      }),
+      {
+        finishText: i18n.t('crud.delete_multi_done').toString()
+      }
+    )
+    return jobHandler.start()
   }
 
   return {
-    showDeleteItem,
-    deleteItemConfirm,
+    showDeleteItemConfirm,
+    showDeleteItemsConfirm,
+    deleteItem,
     deleteSelectedRows
   }
 }

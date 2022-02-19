@@ -15,14 +15,14 @@
     <template v-for="menu in children">
       <MenuNoChild v-if="menu.type === MenuType.NO_CHILD"
                    :to="menu.to"
-                   :title="menu.title"
+                   :title="$t(menu.title)"
                    :active-class="menu.activeClass"
                    :icon="menu.icon"
                    style="padding-left: 32px;"
       />
       <MenuHasChild v-else-if="menu.type === MenuType.HAS_CHILD"
                     :to="menu.to"
-                    :title="menu.title"
+                    :title="$t(menu.title)"
                     :active-class="menu.activeClass"
                     :icon="menu.icon"
                     :children="menu.children"

@@ -2,6 +2,7 @@ import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import { AxiosResponse } from 'axios'
 import { $store } from '~/utils/store'
 import { showNotificationFromErrorResponse, showNotificationFromResponse } from '~/utils/index'
+import { AxiosOption } from '~/types';
 
 // eslint-disable-next-line import/no-mutable-exports
 let $axios: NuxtAxiosInstance
@@ -47,23 +48,36 @@ export function addDefaultRequestInterception (axios: NuxtAxiosInstance) {
   })
 }
 
-export function addDefaultResponseInterception (axios: NuxtAxiosInstance, notifyWhenSuccess = true) {
+export function addDefaultResponseInterception (
+  axios: NuxtAxiosInstance,
+  axiosOpts?: AxiosOption
+) {
+  axiosOpts = {
+    notifyWhenSuccess: true,
+    notifyWhenError: true,
+    ...axiosOpts
+  }
   axios.interceptors.response.use((response: AxiosResponse) => {
-    if (notifyWhenSuccess) {
+    if (axiosOpts!.notifyWhenSuccess) {
       showNotificationFromResponse(response)
     }
     return response
   }, (error: any) => {
-    showNotificationFromErrorResponse(error)
+    if (axiosOpts!.notifyWhenError) {
+      showNotificationFromErrorResponse(error)
+    }
     return Promise.reject(error)
   })
 }
 
-export const silentAxios = () => {
+export const silentAxios = (axiosOpts?: AxiosOption) => {
   const newAxios = $axios.create()
   addDefaultRequestInterception(newAxios)
-
-  addDefaultResponseInterception(newAxios, false)
+  axiosOpts = {
+    notifyWhenSuccess: false,
+    ...axiosOpts
+  }
+  addDefaultResponseInterception(newAxios, axiosOpts)
   return newAxios
 }
 

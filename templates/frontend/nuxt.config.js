@@ -119,6 +119,16 @@ export default {
     ]
   },
 
+  watchers: {
+    chokidar: {
+      ignored: /(node_modules)|(.git)|(vendor)/
+    },
+
+    webpack: {
+      ignored: /(node_modules)|(.git)|(vendor)/
+    }
+  },
+  
   hooks: {
     // build: {
     //   done(generator) {

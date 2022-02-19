@@ -22,7 +22,7 @@
           :dialog.sync="createDialog"
           :items-per-page.sync="itemsPerPage"
           :handle-refresh-fn="clearSelectionAndReload"
-          :handle-delete-fn="deleteSelectedRows"
+          :handle-delete-fn="showDeleteItemsConfirm"
         >
           <template #filters>
             <$MODEL_NAME$FilterAndAction
@@ -41,7 +41,7 @@
         <v-icon
           small
           class="red--text"
-          @click.stop.prevent="showDeleteItem(item)"
+          @click.stop.prevent="showDeleteItemConfirm(item)"
         >
           mdi-delete
         </v-icon>
@@ -51,7 +51,7 @@
     <!--    region create modal-->
     <BaseCreateOrUpdateModal
       :is-show.sync="createDialog"
-      :form-title="$t('crud.add_new_title_modal', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
+      :form-title="$t('crud.add_new_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
       :data="selectedItem"
       :options="createOptions"
       :handle-submit="addNewRecord"
@@ -66,7 +66,7 @@
     <!--    region update modal-->
     <BaseCreateOrUpdateModal
       :is-show.sync="updateDialog"
-      :form-title="$t('crud.edit_title_modal', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
+      :form-title="$t('crud.edit_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
       :data="selectedItem"
       :options="updateOptions"
       :handle-submit="updateRecord"
@@ -132,7 +132,7 @@ export default defineComponent({
     })
 
     // delete confirm
-    const { showDeleteItem, deleteItemConfirm, deleteSelectedRows } = useConfirmDelete({
+    const { showDeleteItemConfirm, deleteItem, showDeleteItemsConfirm, deleteSelectedRows } = useConfirmDelete({
       deleteRecordFn: $MODEL_NAME$Service.delete$MODEL_NAME$,
       selectedItem: selectedItem,
       selectedRows: selectedRows,
@@ -156,10 +156,11 @@ export default defineComponent({
       resetSelectedRow,
       showEditItem,
       showEditItemByDoubleClick,
-      showDeleteItem,
-      deleteItemConfirm,
+      showDeleteItemConfirm,
+      showDeleteItemsConfirm,
+      deleteItem,
       clearSelectionAndReload,
-      deleteSelectedRows
+      deleteSelectedRows,
     }
   },
   data () {

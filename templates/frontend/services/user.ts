@@ -1,6 +1,7 @@
 import { DataOptions, DataTableHeader } from 'vuetify'
-import { $axios, silentAxios } from '~/utils/api'
+import { $axios, $silentAxios, silentAxios } from '~/utils/api'
 import { cloneObject, findIndexInHeader } from '~/utils';
+import { AxiosOption } from '~/types';
 
 const UserService = {
   async fetchUser (options: DataOptions, keyword: string, headers: DataTableHeader[]) {
@@ -34,18 +35,38 @@ const UserService = {
     })
   },
 
-  async addNewUser (data: any) {
-    return await $axios.post('/users', data)
+  async loadCreateUserOption (params: any) {
+    return await $silentAxios.get('/users/create', {
+      params
+    })
   },
 
-  async updateUser (id: any, data: any) {
-    return await $axios.put(`/users/${id}`, data)
-  },
-
-  async deleteUser (data: any, isSilent = false) {
+  async addNewUser (data: any, axiosOpts?: AxiosOption) {
     let axios = $axios
-    if (isSilent) {
-      axios = silentAxios()
+    if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
+      axios = silentAxios(axiosOpts)
+    }
+    return await axios.post('/users', data)
+  },
+
+  async loadUpdateUserOption (id: any, params: any) {
+    return await $silentAxios.get(`/users/${id}/edit`, {
+      params
+    })
+  },
+
+  async updateUser (id: any, data: any, axiosOpts?: AxiosOption) {
+    let axios = $axios
+    if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
+      axios = silentAxios(axiosOpts)
+    }
+    return await axios.put(`/users/${id}`, data)
+  },
+
+  async deleteUser (data: any, axiosOpts?: AxiosOption) {
+    let axios = $axios
+    if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
+      axios = silentAxios(axiosOpts)
     }
     return await axios.delete(`/users/${data.id}`)
   }
