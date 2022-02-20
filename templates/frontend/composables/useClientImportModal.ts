@@ -14,6 +14,7 @@ function useCreateModal<T> (option: UseCreateModalOption<T>) {
   const importData = ref({})
   const importOptions = ref({})
   const importProgress  = ref<ProgressStatus>({
+    importing: false,
     total: 0,
     done: 0
   })
@@ -51,7 +52,7 @@ function useCreateModal<T> (option: UseCreateModalOption<T>) {
     importProgress,
     showProgress,
     showImportDialog,
-    resetImportData
+    resetImportData,
   }
 }
 

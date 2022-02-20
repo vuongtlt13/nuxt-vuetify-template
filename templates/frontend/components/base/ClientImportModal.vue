@@ -12,7 +12,7 @@
 
         <v-card-text>
           <v-container>
-            <slot name="fields" :init-data="innerData" :options="options" :importing="importing"/>
+            <slot name="fields" :init-data="innerData" :options="options" :progress="innerProgress"/>
           </v-container>
         </v-card-text>
 
@@ -31,14 +31,13 @@
             color="blue darken-1"
             text
             @click="closeModal"
-            :disabled="importing"
           >
             {{ $t('crud.cancel') }}
           </v-btn>
           <v-btn
             color="blue darken-1"
             text
-            :disabled="invalid || importing"
+            :disabled="invalid || innerProgress.importing"
             @click="callSubmitFn"
           >
             {{ $t('crud.import') }}
@@ -62,6 +61,7 @@ export default defineComponent({
     progress: {
       type: [Object], default: () => {
         return {
+          importing: false,
           total: 0,
           done: 0
         } as ProgressStatus
@@ -101,12 +101,12 @@ export default defineComponent({
   setup (props, context) {
     const dialog = useVModel(props, 'isShow', context.emit)
     const innerData = toRef(props, 'data')
-    const importing = ref(false)
+    const innerProgress = useVModel(props, 'progress')
 
     return {
       dialog,
       innerData,
-      importing
+      innerProgress
     }
   },
   computed: {
@@ -120,7 +120,10 @@ export default defineComponent({
     }
   },
   methods: {
-    closeModal () {
+    async closeModal () {
+      if (this.innerProgress.importing) {
+        this.innerProgress.importing = false
+      }
       this.dialog = false
       if (this.handleCancel) {
         // @ts-ignore
@@ -132,8 +135,8 @@ export default defineComponent({
     },
 
     callSubmitFn () {
-      if (!this.importing) {
-        this.importing = true
+      if (!this.innerProgress.importing) {
+        this.innerProgress.importing = true
         // @ts-ignore
         this.handleSubmit(this.key, this.innerData)
           .then(() => {
@@ -148,7 +151,9 @@ export default defineComponent({
             }
           })
           .finally(() => {
-            this.importing = false
+            this.innerProgress.importing = false
+            // @ts-ignore
+            this.handleCancel()
           })
       }
     }

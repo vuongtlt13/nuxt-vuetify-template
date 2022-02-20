@@ -124,6 +124,17 @@ class TemplateGenerator extends BaseGenerator {
             $fieldRule = $this->generateVeeValidationRule($field);
             $counter = $this->generateCounter($field);
             $fieldTemplate = HTMLFieldGenerator::generateHTML($field, $this->templateType);
+            $fkSourceLang = "";
+            if ($field->isForeignKey) {
+                $vars = $this->commandData->generateFKVars($field);
+                $fieldTemplate = fill_template([
+                    '$FIELD_NAME_CAMEL$' => $vars['$SOURCE_TABLE_NAME_SINGULAR_CAMEL$'],
+                    '$MODEL_NAME_CAMEL$'
+                ], $fieldTemplate);
+            }
+            $fieldTemplate = fill_template([
+                '$FK_SOURCE$' => $fkSourceLang
+            ], $fieldTemplate);
             $fieldDef = fill_template([
                 '$COUNTER_CONDITION$' => $counter,
                 '$FIELD_RULE$' => $fieldRule

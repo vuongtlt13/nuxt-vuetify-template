@@ -1,10 +1,10 @@
 import * as XLSX from 'xlsx';
 import { WorkBook, WorkSheet } from 'xlsx';
-import { AxiosOption, JobStatus, ProgressStatus, StringMap } from '~/types';
+import { AxiosOption, ProgressStatus, StringMap } from '~/types';
 import { JobHandler, JobHandlerOption, wrappedAxiosHandler } from '~/utils/job-handler';
-import BranchService from '~/services/branch';
 import { AxiosResponse } from 'axios';
 import { i18n } from '~/plugins/i18n';
+import { Ref } from '@vue/composition-api';
 
 export const readXLSX = async (file: File | null): Promise<WorkBook | null> => {
   return new Promise((resolve => {
@@ -51,6 +51,7 @@ interface UseImportFromXLSXOption<T> {
   mapping: StringMap<string>
   handlerFunction: (data: any, axiosOpts?: AxiosOption) => Promise<AxiosResponse>
   beforeStart?: () => Promise<any>
+  additionalData?: any
   importProgress?: ProgressStatus
   axiosOpts?: AxiosOption
   jobHandlerOpts?: JobHandlerOption
@@ -74,7 +75,16 @@ export async function importFromXLSX<T> (option: UseImportFromXLSXOption<T>) {
   }
 
   const handlerFn = async (rowData: StringMap<any>) => {
-    return wrappedAxiosHandler(option.handlerFunction(rowDataToFormData(rowData, option.mapping), option.axiosOpts))
+    let convertedData = rowDataToFormData(rowData, option.mapping)
+    return wrappedAxiosHandler(
+      option.handlerFunction(
+        {
+          ...convertedData,
+          ...option.additionalData
+        },
+        option.axiosOpts
+      )
+    )
   }
 
   if (option.file) {

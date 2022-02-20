@@ -5,6 +5,7 @@
     :rules="rules"
   >
     <v-select
+      v-model="innerValue"
       :items="options"
       dense
       :error-messages="v.errors"

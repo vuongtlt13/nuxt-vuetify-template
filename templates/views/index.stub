@@ -21,6 +21,7 @@
           :search.sync="search"
           :dialog.sync="createDialog"
           :items-per-page.sync="itemsPerPage"
+          :show-import-dialog="showImportDialog"
           :handle-refresh-fn="clearSelectionAndReload"
           :handle-delete-fn="showDeleteItemsConfirm"
         >

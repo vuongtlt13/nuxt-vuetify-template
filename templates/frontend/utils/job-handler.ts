@@ -96,7 +96,7 @@ export class JobHandler<T> implements IJobHandler<T> {
     timeoutEachTask: Infinity,
     timeout: Infinity,
     waitTime: 100,
-    workerLimit: 20,
+    workerLimit: 10,
     debug: false,
     finishText: i18n.t('crud.finished').toString()
   }
@@ -104,6 +104,7 @@ export class JobHandler<T> implements IJobHandler<T> {
   private _running: boolean = false
   readonly handlerFunction: (data: T) => Promise<JobStatus>
   readonly updateProgress: () => void
+  public importProgress?: ProgressStatus
 
   constructor (handlerFn: (data: T) => Promise<JobStatus>, importProgress?: ProgressStatus, data?: any[], opts?: JobHandlerOption) {
     this._options = {
@@ -111,6 +112,7 @@ export class JobHandler<T> implements IJobHandler<T> {
       ...opts
     }
     this.handlerFunction = handlerFn
+    this.importProgress = importProgress
     this.updateProgress = () => {
       if (importProgress) {
         importProgress.total = this._total
@@ -137,6 +139,10 @@ export class JobHandler<T> implements IJobHandler<T> {
       this._finished = false
       this._jobs = []
       while (this._running && !this._finished) {
+        if (this.importProgress && !this.importProgress?.importing) {
+          console.log("Force stop importing!")
+          break;
+        }
         if (this._queue.size() === 0) {
           await sleep(this._options.waitTime!)
           if (this._queue.size() === 0) {

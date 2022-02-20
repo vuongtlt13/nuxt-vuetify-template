@@ -17,6 +17,12 @@ export default defineComponent({
         return {}
       }
     },
+    options: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
     onChange: {
       type: Function,
       default: null
