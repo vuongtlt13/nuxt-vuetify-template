@@ -34,4 +34,14 @@ class HTMLFieldGenerator {
 
         return $fieldTemplate;
     }
+
+    public static function generateDefaultValue($htmlType)
+    {
+        switch ($htmlType) {
+            case 'checkbox':
+                return false;
+            default:
+                return '';
+        }
+    }
 }

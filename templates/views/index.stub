@@ -5,25 +5,26 @@
     style="height: 100%;"
   >
     <BaseDataTable
-      height="70vh"
-      :headers="headers"
-      :search="search"
-      :items.sync="items"
-      :selected-rows.sync="selectedRows"
-      :draw.sync="draw"
+      height="77vh"
+      :headers="$MODEL_NAME_CAMEL$Headers"
+      :search="search$MODEL_NAME$"
+      :items.sync="$MODEL_NAME_CAMEL$Datatable.items.value"
+      :selected-rows.sync="$MODEL_NAME_CAMEL$Datatable.selectedRows.value"
+      :draw.sync="$MODEL_NAME_CAMEL$Datatable.draw.value"
       :fetch-data-func="fetch$MODEL_NAME$"
       :show-select="false"
-      @dblclick:row="showEditItemByDoubleClick"
-      :items-per-page.sync="itemsPerPage"
+      @dblclick:row="$MODEL_NAME_CAMEL$UpdateModal.showEditItemByDoubleClick"
+      :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
+      d-style="border-radius: inherit;"
+      p-style=""
     >
       <template #top>
         <BaseToolbar
-          :search.sync="search"
-          :dialog.sync="createDialog"
-          :items-per-page.sync="itemsPerPage"
-          :show-import-dialog="showImportDialog"
-          :handle-refresh-fn="clearSelectionAndReload"
-          :handle-delete-fn="showDeleteItemsConfirm"
+          :search.sync="search$MODEL_NAME$"
+          :dialog.sync="$MODEL_NAME_CAMEL$CreateModal.createDialog.value"
+          :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
+          :handle-refresh-fn="$MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload"
+          :handle-delete-fn="$MODEL_NAME_CAMEL$DeleteConfirm.showDeleteItemsConfirm"
         >
           <template #filters>
             <$MODEL_NAME$FilterAndAction
@@ -35,14 +36,14 @@
         <v-icon
           small
           class="orange--text"
-          @click.stop.prevent="showEditItem(item)"
+          @click.stop.prevent="$MODEL_NAME_CAMEL$UpdateModal.showEditItem(item)"
         >
           mdi-pencil
         </v-icon>
         <v-icon
           small
           class="red--text"
-          @click.stop.prevent="showDeleteItemConfirm(item)"
+          @click.stop.prevent="$MODEL_NAME_CAMEL$DeleteConfirm.showDeleteItemConfirm(item)"
         >
           mdi-delete
         </v-icon>
@@ -51,30 +52,30 @@
 
     <!--    region create modal-->
     <BaseCreateOrUpdateModal
-      :is-show.sync="createDialog"
+      :is-show.sync="$MODEL_NAME_CAMEL$CreateModal.createDialog.value"
       :form-title="$t('crud.add_new_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
-      :data="selectedItem"
-      :options="createOptions"
-      :handle-submit="addNewRecord"
-      :handle-cancel="resetSelectedRow"
+      :data="$MODEL_NAME_CAMEL$Datatable.selectedItem"
+      :options="$MODEL_NAME_CAMEL$CreateModal.createOptions"
+      :handle-submit="$MODEL_NAME_CAMEL$CreateModal.addNewRecord"
+      :handle-cancel="$MODEL_NAME_CAMEL$Datatable.resetSelectedRow"
     >
       <template #fields="{initData, options}">
-        <$MODEL_NAME$Fields :init-data="initData" :options="options" :action-type="actionType"/>
+        <$MODEL_NAME$Fields :init-data="initData" :options="options" :action-type="$MODEL_NAME_CAMEL$CreateModal.actionType"/>
       </template>
     </BaseCreateOrUpdateModal>
     <!--    endregion create modal-->
 
     <!--    region update modal-->
     <BaseCreateOrUpdateModal
-      :is-show.sync="updateDialog"
+      :is-show.sync="$MODEL_NAME_CAMEL$UpdateModal.updateDialog.value"
       :form-title="$t('crud.edit_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
-      :data="selectedItem"
-      :options="updateOptions"
-      :handle-submit="updateRecord"
-      :handle-cancel="resetSelectedRow"
+      :data="$MODEL_NAME_CAMEL$Datatable.selectedItem"
+      :options="$MODEL_NAME_CAMEL$UpdateModal.updateOptions"
+      :handle-submit="$MODEL_NAME_CAMEL$UpdateModal.updateRecord"
+      :handle-cancel="$MODEL_NAME_CAMEL$Datatable.resetSelectedRow"
     >
       <template #fields="{initData, options}">
-        <$MODEL_NAME$Fields :init-data="initData" :options=options :action-type="actionType"/>
+        <$MODEL_NAME$Fields :init-data="initData" :options=options :action-type="$MODEL_NAME_CAMEL$CreateModal.actionType"/>
       </template>
     </BaseCreateOrUpdateModal>
     <!--    endregion update modal-->
@@ -83,7 +84,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import headerDataTable from '~/datatables/$MODEL_NAME_DASHED$/header'
+import $MODEL_NAME_CAMEL$HeaderDataTable from '~/datatables/$MODEL_NAME_DASHED$/header'
 import $MODEL_NAME$Service from '~/services/$MODEL_NAME_DASHED$'
 import useDataTable from '~/composables/useDataTable';
 import useCreateModal from '~/composables/useCreateModal';
@@ -104,71 +105,49 @@ export default defineComponent({
     'auth'
   ],
   setup () {
+    // region $MODEL_NAME$
     // datatable init
-    const {
-      items,
-      itemsPerPage,
-      selectedItem,
-      selectedRows,
-      draw,
-      reloadTableFn,
-      resetSelectedRow,
-      clearSelectionAndReload
-    } = useDataTable()
+    const $MODEL_NAME_CAMEL$Datatable = useDataTable({
+      $DEFAULT_VALUES$
+    })
 
     // create modal
-    const { createDialog, actionType, addNewRecord, createOptions } = useCreateModal({
+    const $MODEL_NAME_CAMEL$CreateModal = useCreateModal({
       loadCreateOptionFn: $MODEL_NAME$Service.loadCreate$MODEL_NAME$Option,
       createRecordFn: $MODEL_NAME$Service.addNew$MODEL_NAME$,
-      clearSelectionAndReloadFn: clearSelectionAndReload,
+      clearSelectionAndReloadFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload,
     })
 
     // update modal
-    const { updateDialog, showEditItem, showEditItemByDoubleClick, updateRecord, updateOptions } = useUpdateModal({
+    const $MODEL_NAME_CAMEL$UpdateModal = useUpdateModal({
       loadUpdateOptionFn: $MODEL_NAME$Service.loadUpdate$MODEL_NAME$Option,
       updateRecordFn: $MODEL_NAME$Service.update$MODEL_NAME$,
-      selectedItem: selectedItem,
-      clearSelectionAndReloadFn: clearSelectionAndReload,
-      actionType: actionType,
+      selectedItem: $MODEL_NAME_CAMEL$Datatable.selectedItem,
+      clearSelectionAndReloadFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload,
+      actionType: $MODEL_NAME_CAMEL$CreateModal.actionType,
     })
 
     // delete confirm
-    const { showDeleteItemConfirm, deleteItem, showDeleteItemsConfirm, deleteSelectedRows } = useConfirmDelete({
+    const $MODEL_NAME_CAMEL$DeleteConfirm = useConfirmDelete({
       deleteRecordFn: $MODEL_NAME$Service.delete$MODEL_NAME$,
-      selectedItem: selectedItem,
-      selectedRows: selectedRows,
-      clearSelectionAndReloadFn: clearSelectionAndReload
+      selectedItem: $MODEL_NAME_CAMEL$Datatable.selectedItem,
+      selectedRows: $MODEL_NAME_CAMEL$Datatable.selectedRows,
+      clearSelectionAndReloadFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload
     })
+    // endregion
 
     return {
-      createDialog,
-      updateDialog,
-      selectedItem,
-      selectedRows,
-      actionType,
-      items,
-      draw,
-      createOptions,
-      updateOptions,
-      itemsPerPage,
-      addNewRecord,
-      updateRecord,
-      reloadTableFn,
-      resetSelectedRow,
-      showEditItem,
-      showEditItemByDoubleClick,
-      showDeleteItemConfirm,
-      showDeleteItemsConfirm,
-      deleteItem,
-      clearSelectionAndReload,
-      deleteSelectedRows,
+      $MODEL_NAME_CAMEL$Datatable,
+      $MODEL_NAME_CAMEL$CreateModal,
+      $MODEL_NAME_CAMEL$UpdateModal,
+      $MODEL_NAME_CAMEL$DeleteConfirm,
     }
   },
   data () {
     return {
       title: process.env.appName,
-      headers: headerDataTable(),
-      search: ''
+      $MODEL_NAME_CAMEL$Headers: $MODEL_NAME_CAMEL$HeaderDataTable(),
+      search$MODEL_NAME$: ''
     }
   },
   head () {

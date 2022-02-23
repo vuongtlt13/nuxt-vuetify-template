@@ -22,10 +22,9 @@ class TemplateGenerator extends BaseGenerator {
     /** @var array */
     private $htmlFields;
 
-    public function __construct(CommandData $commandData)
-    {
+    public function __construct(CommandData $commandData) {
         $this->commandData = $commandData;
-        $this->basePath = dirname(app_path()) . DIRECTORY_SEPARATOR . "frontend";
+        $this->basePath = dirname(app_path()).DIRECTORY_SEPARATOR."frontend";
         $this->templateType = "nuxt-vuetify-template";
     }
 
@@ -53,7 +52,7 @@ class TemplateGenerator extends BaseGenerator {
             'header.ts',
             $this->datatablePath(),
             [
-                '$HEADER_FIELDS$' => $this->generateDataTableHeaderColumns()
+                '$HEADER_FIELDS$' => $this->generateDataTableHeaderColumns(),
             ]
         );
     }
@@ -64,7 +63,9 @@ class TemplateGenerator extends BaseGenerator {
         $headerFieldTemplate = trim($headerFieldTemplate, "\n");
 
         foreach ($this->commandData->fields as $field) {
-            if (!$field->isShowable) continue;
+            if (!$field->isShowable) {
+                continue;
+            }
             $fieldColumn = fill_template([
                 '$ORDERABLE$' => $field->isOrderable ? "true" : "false",
                 '$CSS_CLASS$' => $field->cssClasses,
@@ -83,13 +84,43 @@ class TemplateGenerator extends BaseGenerator {
         return prefix_tabs_each_line($headerContent, 1, 2);
     }
 
+    private function generateDefaultValues() {
+        $defaultValues = [];
+
+        foreach ($this->commandData->fields as $field) {
+            if (!$field->isCreatable && !$field->isEditable) {
+                continue;
+            }
+
+            $defaultValue = $field->defaultValue;
+            if ($defaultValue === null) {
+                $defaultValue = HTMLFieldGenerator::generateDefaultValue($field->htmlType);
+            }
+
+            if (is_string($defaultValue)) {
+                $defaultValues[] = "$field->name: '$defaultValue'";
+            } elseif (is_null($defaultValue)) {
+                $defaultValues[] = "$field->name: null";
+            } elseif (is_bool($defaultValue)) {
+                $defaultValues[] = "$field->name: ".($defaultValue ? "true" : "false");
+            } else {
+                $defaultValues[] = "$field->name: $defaultValue";
+            }
+        }
+
+        return implode(",\n", $defaultValues);
+    }
+
     private function generateIndexPage() {
         FileUtil::createDirectoryIfNotExist($this->pagePath());
         $this->renderCodeFromTemplate(
             'views.index',
             $this->templateType,
             'index.vue',
-            $this->pagePath()
+            $this->pagePath(),
+            [
+                '$DEFAULT_VALUES$' => prefix_tabs_each_line($this->generateDefaultValues(), 3, 2),
+            ]
         );
     }
 
@@ -129,15 +160,15 @@ class TemplateGenerator extends BaseGenerator {
                 $vars = $this->commandData->generateFKVars($field);
                 $fieldTemplate = fill_template([
                     '$FIELD_NAME_CAMEL$' => $vars['$SOURCE_TABLE_NAME_SINGULAR_CAMEL$'],
-                    '$MODEL_NAME_CAMEL$'
+                    '$MODEL_NAME_CAMEL$',
                 ], $fieldTemplate);
             }
             $fieldTemplate = fill_template([
-                '$FK_SOURCE$' => $fkSourceLang
+                '$FK_SOURCE$' => $fkSourceLang,
             ], $fieldTemplate);
             $fieldDef = fill_template([
                 '$COUNTER_CONDITION$' => $counter,
-                '$FIELD_RULE$' => $fieldRule
+                '$FIELD_RULE$' => $fieldRule,
             ], $fieldTemplate);
             $fieldDef = fill_template_with_field_data(
                 $this->commandData->dynamicVars,
@@ -160,7 +191,7 @@ class TemplateGenerator extends BaseGenerator {
             if (count($maxRule) > 0) {
                 $maxRule = $maxRule[0];
                 $maxLength = explode(":", $maxRule)[1];
-                return infy_nl(1) . infy_tabs(2, 2) . "counter=\"$maxLength\"";
+                return infy_nl(1).infy_tabs(2, 2)."counter=\"$maxLength\"";
             }
         }
 

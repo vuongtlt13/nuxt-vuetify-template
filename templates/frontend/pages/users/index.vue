@@ -5,7 +5,7 @@
     style="height: 100%;"
   >
     <BaseDataTable
-      height="70vh"
+      height="77vh"
       :headers="headers"
       :search="search"
       :items.sync="items"
@@ -15,6 +15,8 @@
       :show-select="false"
       @dblclick:row="showEditItemByDoubleClick"
       :items-per-page.sync="itemsPerPage"
+      d-style="border-radius: inherit;"
+      p-style=""
     >
       <template #top>
         <BaseToolbar

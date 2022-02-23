@@ -16,11 +16,11 @@
       :show-select="showSelect"
       :multi-sort="multiSort"
       hide-default-footer
-      v-bind="$attrs"
       @page-count="pageCount = $event"
       @click:row="selectOrUnselectRow"
+      v-bind="$attrs"
       v-on="$listeners"
-      style="border-radius: inherit;height: 86vh;"
+      :style="dStyle"
     >
       <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
         <slot :name="slot" v-bind="scope"/>
@@ -34,7 +34,8 @@
       <v-pagination
         v-model="page"
         :length="pageCount"
-        :total-visible="5"
+        :total-visible="totalVisible"
+        :style="pStyle"
       />
     </div>
   </div>
@@ -53,6 +54,18 @@ export default defineComponent({
     height: {
       type: String,
       default: () => undefined
+    },
+    dStyle: {
+      type: String,
+      default: () => ''
+    },
+    pStyle: {
+      type: String,
+      default: () => ''
+    },
+    totalVisible: {
+      type: Number,
+      default: () => 5
     },
     showSelect: {
       type: Boolean,

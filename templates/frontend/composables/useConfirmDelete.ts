@@ -39,17 +39,19 @@ function useConfirmDelete<T> (option: UseDeleteModalOption<T>) {
   }
 
   const showDeleteItemsConfirm = () => {
-    Vue.swal.fire({
-      title: i18n.t('crud.delete_title').toString(),
-      text: i18n.t('crud.confirm_delete_multi_text').toString(),
-      icon: 'error',
-      confirmButtonText: 'OK',
-      showCancelButton: true
-    }).then(({ isConfirmed }) => {
-      if (isConfirmed) {
-        return deleteSelectedRows();
-      }
-    });
+    if (option.selectedRows.value.length > 0) {
+      Vue.swal.fire({
+        title: i18n.t('crud.delete_title').toString(),
+        text: i18n.t('crud.confirm_delete_multi_text').toString(),
+        icon: 'error',
+        confirmButtonText: 'OK',
+        showCancelButton: true
+      }).then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          return deleteSelectedRows();
+        }
+      });
+    }
   }
 
   const handlerFn = async (data: any) => {
