@@ -2,7 +2,7 @@ import { Ref } from '@vue/composition-api';
 import { defaultSuccessCallbackFn, SuccessCallbackFunction } from '~/utils';
 import Vue from 'vue';
 import { i18n } from '~/plugins/i18n';
-import { AxiosOption, JobStatus } from '~/types';
+import { AxiosOption } from '~/types';
 import { JobHandler, wrappedAxiosHandler } from '~/utils/job-handler';
 
 interface UseDeleteModalOption<T> {
@@ -11,13 +11,24 @@ interface UseDeleteModalOption<T> {
   selectedRows: Ref,
   clearSelectionAndReloadFn: any,
   successCallbackFn?: SuccessCallbackFunction
-  successCallbackOption?: any
+  successCallbackOption?: any,
+  keyFn?: (data: T) => any,
+
 }
 
 function useConfirmDelete<T> (option: UseDeleteModalOption<T>) {
+  const keyFunc = option.keyFn
+    ? (option.keyFn)
+    :  (
+      (data: any) => {
+        return data.id
+      }
+    )
+
   const deleteItem = (data: T, isReload = false, axiosOpts?: AxiosOption) => {
     const callbackFn = option.successCallbackFn || defaultSuccessCallbackFn
-    return option.deleteRecordFn(data, axiosOpts).then((resp) => {
+    const id = keyFunc(data)
+    return option.deleteRecordFn(id, axiosOpts).then((resp) => {
       callbackFn(resp, option.successCallbackOption)
       if (isReload) option.clearSelectionAndReloadFn()
     })
@@ -63,18 +74,21 @@ function useConfirmDelete<T> (option: UseDeleteModalOption<T>) {
   }
 
   const deleteSelectedRows = () => {
-    const jobHandler = new JobHandler(
-      handlerFn,
-      undefined,
-      option.selectedRows.value.map((item: any, index: number) => {
-        let isReload = index == option.selectedRows.value.length - 1;
-        return { item, isReload }
-      }),
-      {
-        finishText: i18n.t('crud.delete_multi_done').toString()
-      }
-    )
-    return jobHandler.start()
+    if (option.selectedRows.value.length == 1) return deleteItem(option.selectedRows.value[0], true);
+    else {
+      const jobHandler = new JobHandler(
+        handlerFn,
+        undefined,
+        option.selectedRows.value.map((item: any, index: number) => {
+          let isReload = index == option.selectedRows.value.length - 1;
+          return { item, isReload }
+        }),
+        {
+          finishText: i18n.t('crud.delete_multi_done').toString()
+        }
+      )
+      return jobHandler.start()
+    }
   }
 
   return {

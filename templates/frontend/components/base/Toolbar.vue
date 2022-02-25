@@ -1,11 +1,10 @@
 <template>
-  <v-container
-    :fluid="true"
-  >
+  <v-container fluid>
     <v-row
       no-gutters
     >
       <v-select
+        v-if="showLengthMenu"
         class="text-center"
         style="max-width: 60px; font-size: 0.7rem"
         :items="items"
@@ -13,11 +12,12 @@
         v-model:value="innerItemsPerPage"
       ></v-select>
       <v-btn
+        v-if="handleCreateFn"
         color="primary"
         dark
         x-small
         class="my-auto toolbar-button"
-        @click="showCreateOrUpdate"
+        @click="handleCreateFn"
       >
         <v-icon small>
           mdi-plus
@@ -36,17 +36,19 @@
         </v-icon>
       </v-btn>
       <v-btn
+        v-if="handleRefreshFn"
         color="primary"
         dark
         x-small
         class="my-auto toolbar-button"
-        @click="handleRefreshFn"
+        @click="handleRefreshFn(true)"
       >
         <v-icon small>
           mdi-refresh
         </v-icon>
       </v-btn>
       <v-btn
+        v-if="handleDeleteFn"
         color="primary"
         dark
         x-small
@@ -60,6 +62,7 @@
       <slot name="inner-filter"/>
       <v-spacer/>
       <v-text-field
+        v-if="searchable"
         v-model="innerSearch"
         append-icon="mdi-magnify"
         :label="$t('crud.search')"
@@ -79,18 +82,14 @@ import { defineComponent } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'Toolbar',
+  name: 'BaseToolbar',
   props: {
-    dialog: { type: Boolean, required: true },
+    searchable: { type: Boolean, default: true },
+    showLengthMenu: { type: Boolean, default: true },
     showImportDialog: { type: Function, default: null },
-    handleRefreshFn: {
-      type: Function, default: () => {
-      }
-    },
-    handleDeleteFn: {
-      type: Function, default: () => {
-      }
-    },
+    handleCreateFn: { type: Function, default: null },
+    handleRefreshFn: { type: Function, default: null },
+    handleDeleteFn: { type: Function, default: null },
     height: { type: String, default: '80px' },
     search: { type: String, default: '' },
     itemsPerPage: { type: Number, default: () => 25 },
@@ -115,18 +114,12 @@ export default defineComponent({
   },
 
   setup (props, context) {
-    const syncDialog = useVModel(props, 'dialog', context.emit)
     const innerSearch = useVModel(props, 'search', context.emit)
     const innerItemsPerPage = useVModel(props, 'itemsPerPage', context.emit)
-    const showCreateOrUpdate = () => {
-      syncDialog.value = true
-    }
 
     return {
-      syncDialog,
       innerSearch,
       innerItemsPerPage,
-      showCreateOrUpdate
     }
   },
   methods: {}

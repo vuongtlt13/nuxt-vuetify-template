@@ -16,23 +16,29 @@ const useDataTable = (defaultValue = {}) => {
   // store all selected rows
   const selectedRows = ref([])
 
+  const fetchExtraParams = ref({})
+
   // store value for trigger reload datatable, could reload every 3 seconds
   const draw = ref(1)
 
   // delayTime for refresh
   const delayTime = ref(0)
 
-  const reloadTableFn = () => {
-    if ((+new Date() / 1000) - delayTime.value >= 3) {
-      draw.value += 1
-      delayTime.value = +new Date() / 1000
+  const reloadTableFn = (delay = false) => {
+    if (delay) {
+      if ((+new Date() / 1000) - delayTime.value >= 0.5) {
+        draw.value += 1
+        delayTime.value = +new Date() / 1000
+      } else {
+        Vue.notify({
+          type: 'warning',
+          title: i18n.t('notification.warning_title').toString(),
+          text: i18n.t('crud.reload_to_fast').toString(),
+          duration: NOTIFICATION_DURATION
+        })
+      }
     } else {
-      Vue.notify({
-        type: 'warning',
-        title: i18n.t('notification.warning_title').toString(),
-        text: i18n.t('crud.reload_to_fast').toString(),
-        duration: NOTIFICATION_DURATION
-      })
+      draw.value += 1
     }
   }
 
@@ -42,10 +48,10 @@ const useDataTable = (defaultValue = {}) => {
     })
   }
 
-  const clearSelectionAndReload = () => {
+  const clearSelectionAndReload = (delay = false) => {
     selectedRows.value = [];
     resetSelectedRow()
-    reloadTableFn()
+    reloadTableFn(delay)
   }
   return {
     items,
@@ -53,6 +59,7 @@ const useDataTable = (defaultValue = {}) => {
     selectedItem,
     selectedRows,
     draw,
+    fetchExtraParams,
     reloadTableFn,
     resetSelectedRow,
     clearSelectionAndReload

@@ -96,7 +96,7 @@ export const convertToVSelectOption = (options: any): object => {
 export const makeOptionFromResponse = (optionResp: any) => {
   let finalOptionResp = {} as any
   Object.keys(optionResp).forEach((key) => {
-    finalOptionResp[key] = convertToVSelectOption(optionResp[key])
+    if (Array.isArray(optionResp[key])) finalOptionResp[key] = convertToVSelectOption(optionResp[key])
   })
   return finalOptionResp
 }

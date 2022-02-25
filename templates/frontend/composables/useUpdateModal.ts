@@ -8,29 +8,43 @@ interface UseUpdateModalOption<T> {
   loadUpdateOptionFn?: (id: any, params: any) => Promise<any>
   loadUpdateOptionParams?: any
   updateRecordFn: (id: any, data: T) => Promise<any>
-  clearSelectionAndReloadFn: any
+  clearSelectionAndReloadFn: (delay?: boolean) => void
   actionType: Ref<string>,
   selectedItem: Ref,
   successCallbackFn?: SuccessCallbackFunction
-  successCallbackOption?: any
+  successCallbackOption?: any,
+  keyFn?: (data: T) => any
+  key?: string
 }
 
 function useUpdateModal<T>(option: UseUpdateModalOption<T>) {
   // for toggle show/hide update modal
   const updateDialog = ref(false)
   const updateOptions = ref({})
+  const keyFunc = option.keyFn
+    ? (option.keyFn)
+    : (
+      option.key
+        ? ((data: T) => {
+          return (data as any)[option.key!]
+        })
+        : ((data: T) => {
+          return (data as any).id
+        })
+    )
 
   watch(updateDialog, (currentValue) => {
-    let id = option.selectedItem.value.id // TODO: improve for multi keys
+    const id = keyFunc(option.selectedItem.value)
     if (currentValue && id) {
       if (option.loadUpdateOptionFn) {
         option.loadUpdateOptionFn(id, option.loadUpdateOptionParams)
           .then((resp) => {
             updateOptions.value = makeOptionFromResponse(resp.data.data)
+            if (resp.data.data.item) option.selectedItem.value = resp.data.data.item
           })
           .catch(err => {
             console.log("Error", err)
-            updateOptions.value = false
+            updateDialog.value = false
           })
       }
     }
@@ -58,10 +72,11 @@ function useUpdateModal<T>(option: UseUpdateModalOption<T>) {
 
   return {
     updateDialog,
+    updateOptions,
+    keyFunc,
     showEditItem,
     showEditItemByDoubleClick,
     updateRecord,
-    updateOptions
   }
 }
 

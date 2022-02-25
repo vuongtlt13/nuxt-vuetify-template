@@ -29,7 +29,7 @@ import { defineComponent } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'ConfirmModal',
+  name: 'BaseConfirmModal',
   props: {
     isShow: Boolean,
     data: { type: Object, default: null },

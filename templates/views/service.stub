@@ -4,7 +4,7 @@ import { cloneObject, findIndexInHeader } from '~/utils';
 import { AxiosOption } from '~/types';
 
 const $MODEL_NAME$Service = {
-  async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[]) {
+  async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any) {
     const clone = cloneObject(options);
     const { page, itemsPerPage, sortBy, sortDesc } = clone
     keyword = keyword.trim()
@@ -25,7 +25,8 @@ const $MODEL_NAME$Service = {
         s: Math.max((page - 1) * itemsPerPage, 0),
         ipp: itemsPerPage,
         sb: finalSortBy,
-        sd: finalSortDesc
+        sd: finalSortDesc,
+        ...params
       }
     }).then((resp) => {
       let total = resp.data.data.recordsTotal;
@@ -62,12 +63,12 @@ const $MODEL_NAME$Service = {
     return await axios.put(`/$MODEL_NAME_PLURAL_DASHED$/${id}`, data)
   },
 
-  async delete$MODEL_NAME$ (data: any, axiosOpts?: AxiosOption) {
+  async delete$MODEL_NAME$ (id: any, axiosOpts?: AxiosOption) {
     let axios = $axios
     if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
       axios = silentAxios(axiosOpts)
     }
-    return await axios.delete(`/$MODEL_NAME_PLURAL_DASHED$/${data.id}`)
+    return await axios.delete(`/$MODEL_NAME_PLURAL_DASHED$/${id}`)
   }
 }
 

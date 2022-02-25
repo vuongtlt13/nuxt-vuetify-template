@@ -81,6 +81,9 @@
 </template>
 
 <script lang="ts">
+import BaseToolbar from '~/components/base/Toolbar.vue';
+import BaseDataTable from '~/components/base/DataTable.vue';
+import BaseCreateOrUpdateModal from '~/components/base/CreateOrUpdateModal.vue';
 import { defineComponent } from '@vue/composition-api'
 import headerDataTable from '~/datatables/user/header'
 import UserService from '~/services/user'
@@ -90,6 +93,7 @@ import useUpdateModal from '~/composables/useUpdateModal';
 import useConfirmDelete from '~/composables/useConfirmDelete';
 
 export default defineComponent({
+  components: { BaseCreateOrUpdateModal, BaseDataTable, BaseToolbar },
   layout: 'default',
   name: 'PageUser',
   meta: {

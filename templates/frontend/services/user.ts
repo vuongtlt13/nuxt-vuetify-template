@@ -4,7 +4,7 @@ import { cloneObject, findIndexInHeader } from '~/utils';
 import { AxiosOption } from '~/types';
 
 const UserService = {
-  async fetchUser (options: DataOptions, keyword: string, headers: DataTableHeader[]) {
+  async fetchUser (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any) {
     const newAxios = silentAxios()
     const clone = cloneObject(options);
     const { page, itemsPerPage, sortBy, sortDesc } = clone
@@ -26,7 +26,8 @@ const UserService = {
         s: Math.max((page - 1) * itemsPerPage, 0),
         ipp: itemsPerPage,
         sb: finalSortBy,
-        sd: finalSortDesc
+        sd: finalSortDesc,
+        ...params
       }
     }).then((resp) => {
       let total = resp.data.data.recordsTotal;

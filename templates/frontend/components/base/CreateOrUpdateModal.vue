@@ -44,7 +44,7 @@ import { defineComponent, onBeforeUpdate, ref, toRef } from '@vue/composition-ap
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'CreateOrUpdateModal',
+  name: 'BaseCreateOrUpdateModal',
   props: {
     isShow: Boolean,
     formTitle: {type: String, default: ''},
@@ -75,24 +75,30 @@ export default defineComponent({
     handleCancel: {
       type: Function,
       default: null
+    },
+    keyFn: {
+      type: Function,
+      default: null
     }
   },
 
   setup (props, context) {
     const dialog = useVModel(props, 'isShow', context.emit)
     const innerData = toRef(props, 'data')
-    const key = ref(null)
+    const keyFunc = props.keyFn
+      ? (props.keyFn)
+      :  (
+        (data: any) => {
+          return data.id
+        }
+      )
 
     const changeData = (data: any) => {
       innerData.value = data
     }
 
-    onBeforeUpdate(() => {
-      key.value = innerData.value.id // TODO: handle multi keys
-    })
-
     return {
-      key,
+      keyFunc,
       dialog,
       innerData,
       changeData,
@@ -108,9 +114,10 @@ export default defineComponent({
     },
 
     callSubmitFn () {
-      if (this.key !== undefined && this.key !== null) {
+      const key = this.keyFunc(this.innerData)
+      if (key !== undefined && key !== null) {
         // @ts-ignore
-        this.handleSubmit(this.key, this.innerData)
+        this.handleSubmit(key, this.innerData)
           .then(() => {
             // @ts-ignore
             this.$refs.obs.reset()

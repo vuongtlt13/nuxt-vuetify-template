@@ -12,6 +12,7 @@
       :selected-rows.sync="$MODEL_NAME_CAMEL$Datatable.selectedRows.value"
       :draw.sync="$MODEL_NAME_CAMEL$Datatable.draw.value"
       :fetch-data-func="fetch$MODEL_NAME$"
+      :fetch-extra-params="$MODEL_NAME_CAMEL$Datatable.fetchExtraParams.value"
       :show-select="false"
       @dblclick:row="$MODEL_NAME_CAMEL$UpdateModal.showEditItemByDoubleClick"
       :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
@@ -21,8 +22,8 @@
       <template #top>
         <BaseToolbar
           :search.sync="search$MODEL_NAME$"
-          :dialog.sync="$MODEL_NAME_CAMEL$CreateModal.createDialog.value"
           :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
+          :handle-create-fn="$MODEL_NAME_CAMEL$CreateModal.showCreateModal"
           :handle-refresh-fn="$MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload"
           :handle-delete-fn="$MODEL_NAME_CAMEL$DeleteConfirm.showDeleteItemsConfirm"
         >
@@ -55,7 +56,7 @@
       :is-show.sync="$MODEL_NAME_CAMEL$CreateModal.createDialog.value"
       :form-title="$t('crud.add_new_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
       :data="$MODEL_NAME_CAMEL$Datatable.selectedItem"
-      :options="$MODEL_NAME_CAMEL$CreateModal.createOptions"
+      :options="$MODEL_NAME_CAMEL$CreateModal.createOptions.value"
       :handle-submit="$MODEL_NAME_CAMEL$CreateModal.addNewRecord"
       :handle-cancel="$MODEL_NAME_CAMEL$Datatable.resetSelectedRow"
     >
@@ -70,7 +71,7 @@
       :is-show.sync="$MODEL_NAME_CAMEL$UpdateModal.updateDialog.value"
       :form-title="$t('crud.edit_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
       :data="$MODEL_NAME_CAMEL$Datatable.selectedItem"
-      :options="$MODEL_NAME_CAMEL$UpdateModal.updateOptions"
+      :options="$MODEL_NAME_CAMEL$UpdateModal.updateOptions.value"
       :handle-submit="$MODEL_NAME_CAMEL$UpdateModal.updateRecord"
       :handle-cancel="$MODEL_NAME_CAMEL$Datatable.resetSelectedRow"
     >
@@ -83,6 +84,9 @@
 </template>
 
 <script lang="ts">
+import BaseToolbar from '~/components/base/Toolbar.vue';
+import BaseDataTable from '~/components/base/DataTable.vue';
+import BaseCreateOrUpdateModal from '~/components/base/CreateOrUpdateModal.vue';
 import { defineComponent } from '@vue/composition-api'
 import $MODEL_NAME_CAMEL$HeaderDataTable from '~/datatables/$MODEL_NAME_DASHED$/header'
 import $MODEL_NAME$Service from '~/services/$MODEL_NAME_DASHED$'
@@ -92,6 +96,7 @@ import useUpdateModal from '~/composables/useUpdateModal';
 import useConfirmDelete from '~/composables/useConfirmDelete';
 
 export default defineComponent({
+  components: { BaseCreateOrUpdateModal, BaseDataTable, BaseToolbar },
   layout: 'default',
   name: 'Page$MODEL_NAME$',
     meta: {
@@ -151,7 +156,7 @@ export default defineComponent({
     }
   },
   head () {
-    return { title: 'home' }
+    return { title: this.$t('models.$MODEL_NAME_CAMEL$.singular').toString() }
   },
   methods: {
     fetch$MODEL_NAME$: $MODEL_NAME$Service.fetch$MODEL_NAME$

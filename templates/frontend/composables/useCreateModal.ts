@@ -8,7 +8,7 @@ interface UseCreateModalOption<T> {
   loadCreateOptionFn?: (params: any) => Promise<any>
   loadCreateOptionParams?: any
   createRecordFn: (data: T) => Promise<any>
-  clearSelectionAndReloadFn: any
+  clearSelectionAndReloadFn: (delay?: boolean) => void
   successCallbackFn?: SuccessCallbackFunction
   successCallbackOption?: any,
 }
@@ -44,11 +44,15 @@ function useCreateModal<T> (option: UseCreateModalOption<T>) {
     })
   }
 
+  const showCreateModal = () => {
+    createDialog.value = true
+  }
   return {
     createDialog,
     actionType,
-    addNewRecord,
     createOptions,
+    addNewRecord,
+    showCreateModal
   }
 }
 

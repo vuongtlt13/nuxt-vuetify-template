@@ -49,7 +49,7 @@ import { useVModel } from '@vueuse/core'
 import { DataTableFetchDataFunc } from '~/types'
 
 export default defineComponent({
-  name: 'DataTable',
+  name: 'BaseDataTable',
   props: {
     height: {
       type: String,
@@ -112,6 +112,10 @@ export default defineComponent({
       type: Function,
       required: true
     },
+    fetchExtraParams: {
+      type: Object,
+      default: () => {return {}}
+    },
   },
   setup (props, { emit }) {
     const page = ref(1)
@@ -133,7 +137,12 @@ export default defineComponent({
     const totalItem = ref(0)
 
     const fetchData = async (options: DataOptions, keyword: string) => {
-      const {total, items} = await (props.fetchDataFunc as DataTableFetchDataFunc)(options, keyword, props.headers)
+      const {total, items} = await (props.fetchDataFunc as DataTableFetchDataFunc)(
+        options,
+        keyword,
+        props.headers,
+        props.fetchExtraParams
+      )
 
       return {
         items,

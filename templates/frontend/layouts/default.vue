@@ -3,7 +3,7 @@
     <TheNavigation/>
     <TheAppBar/>
     <v-main class="main-background">
-      <v-container fluid style="height: 95vh;">
+      <v-container  fluid>
         <Nuxt/>
       </v-container>
     </v-main>
@@ -78,6 +78,6 @@ export default {}
 }
 
 html {
-  overflow: hidden;
+  overflow: auto;
 }
 </style>
