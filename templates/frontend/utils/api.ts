@@ -83,12 +83,14 @@ export const silentAxios = (axiosOpts?: AxiosOption) => {
 
 export const convertToVSelectOption = (options: any): object => {
   let selectOptions = [] as any[]
-  Object.keys(options).forEach((key) => {
+  for (const key in options) {
+    let value: any = key;
+    if (!isNaN(+key)) value = +key
     selectOptions.push({
       text: options[key],
-      value: key
+      value: value
     })
-  })
+  }
 
   return selectOptions
 }
@@ -96,7 +98,7 @@ export const convertToVSelectOption = (options: any): object => {
 export const makeOptionFromResponse = (optionResp: any) => {
   let finalOptionResp = {} as any
   Object.keys(optionResp).forEach((key) => {
-    if (Array.isArray(optionResp[key])) finalOptionResp[key] = convertToVSelectOption(optionResp[key])
+    finalOptionResp[key] = convertToVSelectOption(optionResp[key])
   })
   return finalOptionResp
 }
