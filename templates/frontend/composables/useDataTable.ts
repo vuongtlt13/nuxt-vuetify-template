@@ -4,11 +4,12 @@ import { i18n } from '~/plugins/i18n';
 import { NOTIFICATION_DURATION } from '~/utils/constants';
 
 const useDataTable = (defaultValue = {}) => {
-
   // store data of table
   const items = ref([])
 
   const itemsPerPage = ref(25)
+
+  const searchKeyword = ref('')
 
   // store a single selected row
   const selectedItem = ref({ ...defaultValue })
@@ -16,10 +17,10 @@ const useDataTable = (defaultValue = {}) => {
   // store all selected rows
   const selectedRows = ref([])
 
-  const fetchExtraParams = ref({})
-
   // store value for trigger reload datatable, could reload every 3 seconds
   const draw = ref(1)
+
+  const fetchExtraParams = ref({})
 
   // delayTime for refresh
   const delayTime = ref(0)
@@ -42,6 +43,12 @@ const useDataTable = (defaultValue = {}) => {
     }
   }
 
+  const selectAllItems = () => {
+    nextTick(() => {
+      selectedRows.value.push(...items.value)
+    })
+  }
+
   const resetSelectedRow = () => {
     nextTick(() => {
       selectedItem.value = { ...defaultValue }
@@ -59,7 +66,9 @@ const useDataTable = (defaultValue = {}) => {
     selectedItem,
     selectedRows,
     draw,
+    searchKeyword,
     fetchExtraParams,
+    selectAllItems,
     reloadTableFn,
     resetSelectedRow,
     clearSelectionAndReload

@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUpdate, ref, toRef } from '@vue/composition-api'
+import { defineComponent, toRef } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({

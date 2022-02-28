@@ -3,16 +3,30 @@
     <TheNavigation/>
     <TheAppBar/>
     <v-main class="main-background">
-      <v-container  fluid>
+      <v-container fluid>
         <Nuxt/>
       </v-container>
     </v-main>
     <notifications classes="my-notification" position="top right"/>
+    <v-overlay :value="overlay">
+      <v-progress-circular
+        indeterminate
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
 <script lang="ts">
-export default {}
+import { mapGetters } from 'vuex';
+
+export default {
+  computed: {
+    ...mapGetters('app', [
+      'overlay'
+    ])
+  }
+}
 </script>
 
 <style lang="scss">

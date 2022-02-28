@@ -59,6 +59,18 @@
           mdi-delete
         </v-icon>
       </v-btn>
+      <v-btn
+        v-if="selectAllFn"
+        color="primary"
+        dark
+        x-small
+        class="my-auto toolbar-button"
+        @click="selectAllFn"
+      >
+        <v-icon small>
+          mdi-select-all
+        </v-icon>
+      </v-btn>
       <slot name="inner-filter"/>
       <v-spacer/>
       <v-text-field
@@ -90,6 +102,7 @@ export default defineComponent({
     handleCreateFn: { type: Function, default: null },
     handleRefreshFn: { type: Function, default: null },
     handleDeleteFn: { type: Function, default: null },
+    selectAllFn: { type: Function, default: null },
     height: { type: String, default: '80px' },
     search: { type: String, default: '' },
     itemsPerPage: { type: Number, default: () => 25 },

@@ -7,7 +7,7 @@
     <BaseDataTable
       height="77vh"
       :headers="$MODEL_NAME_CAMEL$Headers"
-      :search="search$MODEL_NAME$"
+      :search="$MODEL_NAME$Datatable.searchKeyword.value"
       :items.sync="$MODEL_NAME_CAMEL$Datatable.items.value"
       :selected-rows.sync="$MODEL_NAME_CAMEL$Datatable.selectedRows.value"
       :draw.sync="$MODEL_NAME_CAMEL$Datatable.draw.value"
@@ -21,11 +21,12 @@
     >
       <template #top>
         <BaseToolbar
-          :search.sync="search$MODEL_NAME$"
+          :search.sync="$MODEL_NAME$Datatable.searchKeyword.value"
           :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
           :handle-create-fn="$MODEL_NAME_CAMEL$CreateModal.showCreateModal"
           :handle-refresh-fn="$MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload"
           :handle-delete-fn="$MODEL_NAME_CAMEL$DeleteConfirm.showDeleteItemsConfirm"
+          :select-all-fn="customerEMeterDatatable.selectAllItems"
         >
           <template #filters>
             <$MODEL_NAME$FilterAndAction
@@ -152,7 +153,6 @@ export default defineComponent({
     return {
       title: process.env.appName,
       $MODEL_NAME_CAMEL$Headers: $MODEL_NAME_CAMEL$HeaderDataTable(),
-      search$MODEL_NAME$: ''
     }
   },
   head () {
