@@ -92,10 +92,7 @@ class TemplateGenerator extends BaseGenerator {
                 continue;
             }
 
-            $defaultValue = $field->defaultValue;
-            if ($defaultValue === null) {
-                $defaultValue = HTMLFieldGenerator::generateDefaultValue($field->htmlType);
-            }
+            $defaultValue = HTMLFieldGenerator::generateDefaultValue($field->htmlType, $field->defaultValue);
 
             if (is_string($defaultValue)) {
                 $defaultValues[] = "$field->name: '$defaultValue'";
