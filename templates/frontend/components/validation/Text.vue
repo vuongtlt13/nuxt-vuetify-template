@@ -24,7 +24,7 @@ export default defineComponent({
     rules: { type: [Object, String], default: '' },
     showSuccess: { type: Boolean, default: true },
     name: { type: String, required: true },
-    value: { type: String, default: '' },
+    value: { type: [String, Number], default: '' },
   },
   setup (props) {
     const innerValue = useVModel(props, 'value')
