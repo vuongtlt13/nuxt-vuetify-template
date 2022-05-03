@@ -18,3 +18,15 @@ $main-background-color: #f5f5f5;
 .v-data-table tbody tr.v-data-table__selected {
   background-color: #cbeaff !important;
 }
+
+div.editable-datatable div > table tbody td, div.editable-datatable div > table tr th {
+  border: solid 1px gainsboro;
+}
+
+div.editable-datatable div > table tbody td.selectedCell {
+  border: solid 2px blue !important;
+}
+
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td, .v-data-table > .v-data-table__wrapper > table > tbody > tr > th, .v-data-table > .v-data-table__wrapper > table > thead > tr > td, .v-data-table > .v-data-table__wrapper > table > thead > tr > th, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > td, .v-data-table > .v-data-table__wrapper > table > tfoot > tr > th {
+  padding: 5px !important;
+}

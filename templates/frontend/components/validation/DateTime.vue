@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 import useDateTimeFormat from "~/composables/useDateTimeFormat";
 
@@ -51,7 +51,7 @@ export default defineComponent({
   setup (props, context) {
     const innerValue = useVModel(props, 'value')
     const showMenu = ref<Boolean>(false)
-    const {dateTimeFormat, formatDateTimeFn, parseDateTimeFn} = useDateTimeFormat()
+    const { dateTimeFormat, formatDateTimeFn, parseDateTimeFn } = useDateTimeFormat()
 
     return {
       innerValue,
@@ -67,7 +67,7 @@ export default defineComponent({
       return this.formatDateTimeFn(this.innerValue)
     }
   },
-  created() {
+  created () {
   }
 })
 </script>

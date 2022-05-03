@@ -3,14 +3,14 @@
     <h1>
       {{ errorMessage }}
     </h1>
-    <NuxtLink to="/">
-      Home page
+    <NuxtLink :to="urlAction">
+      {{ textAction }}
     </NuxtLink>
   </v-app>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { HttpCode } from '~/utils/constants';
 import { i18n } from '~/plugins/i18n';
 
@@ -19,7 +19,8 @@ export default defineComponent({
   props: {
     error: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     }
   },
 
@@ -28,13 +29,19 @@ export default defineComponent({
   },
 
   computed: {
-    errorMessage(): string {
-      if (this.error.statusCode == HttpCode.NOT_FOUND) return i18n.t("auth.not_found").toString()
-      return this.error.message || i18n.t("auth.unknown_error").toString()
+    errorMessage (): string {
+      if (this.error.statusCode == HttpCode.NOT_FOUND) return i18n.t("app.route_not_found").toString()
+      return this.error.message || i18n.t("app.unknown_error").toString()
+    },
+    textAction (): string {
+      return ((this.error.extra || {}).text || this.$t("app.homepage").toString())
+    },
+    urlAction (): string {
+      return ((this.error.extra || {}).url || "/")
     }
   },
   head () {
-    const title: string = this.error.statusCode == HttpCode.NOT_FOUND ? this.errorMessage : i18n.t("auth.unknown_error").toString()
+    const title: string = this.errorMessage
     return {
       title
     }

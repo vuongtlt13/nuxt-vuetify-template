@@ -9,9 +9,9 @@
               <br><br>
               <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
                 <form @submit.prevent="submit">
-                  <ValidationEmail
+                  <ValidationText
                     v-model="username"
-                    rules="required|email|min:4"
+                    rules="required|min:4"
                     name="username"
                     :label="$t('auth.username')"
                   />
@@ -47,8 +47,12 @@ import { defineComponent } from '@vue/composition-api'
 import AuthService from '~/services/auth'
 import { sleep } from '~/utils'
 import { NOTIFICATION_DURATION } from '~/utils/constants'
+import ValidationTextArea from '~/components/validation/TextArea.vue';
+import ValidationPassword from '~/components/validation/Password.vue';
+import ValidationText from '~/components/validation/Text.vue';
 
 export default defineComponent({
+  components: { ValidationText, ValidationPassword, ValidationTextArea },
   layout: 'empty',
   computed: {
     ...mapGetters('config', [
@@ -58,7 +62,7 @@ export default defineComponent({
       'check'
     ]),
     usernameField () {
-      return 'email'
+      return 'username'
     }
   },
   mounted () {

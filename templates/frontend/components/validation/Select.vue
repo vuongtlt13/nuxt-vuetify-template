@@ -5,8 +5,8 @@
     :rules="rules"
   >
     <v-select
-      v-model="innerValue"
       :items="options"
+      v-model="innerValue"
       dense
       :error-messages="v.errors"
       :success="v.valid && v.validated && v.dirty && showSuccess"
@@ -18,9 +18,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
-import { options } from "@nuxtjs/i18n/src/templates/options";
 
 export default defineComponent({
   name: 'ValidationSelect',
@@ -28,7 +27,7 @@ export default defineComponent({
     rules: { type: [Object, String], default: '' },
     showSuccess: { type: Boolean, default: true },
     name: { type: String, required: true },
-    options: {type: Array, require: true},
+    options: { type: Array, require: true },
     value: { type: [String, Number], default: '' },
   },
   setup (props) {
@@ -37,7 +36,7 @@ export default defineComponent({
       innerValue
     }
   },
-  created() {
+  created () {
   }
 })
 </script>

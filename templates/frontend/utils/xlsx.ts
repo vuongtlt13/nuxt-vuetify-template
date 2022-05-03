@@ -4,7 +4,6 @@ import { AxiosOption, ProgressStatus, StringMap } from '~/types';
 import { JobHandler, JobHandlerOption, wrappedAxiosHandler } from '~/utils/job-handler';
 import { AxiosResponse } from 'axios';
 import { i18n } from '~/plugins/i18n';
-import { Ref } from '@vue/composition-api';
 
 export const readXLSX = async (file: File | null): Promise<WorkBook | null> => {
   return new Promise((resolve => {

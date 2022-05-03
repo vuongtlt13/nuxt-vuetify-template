@@ -6,7 +6,7 @@
           <v-col sm="3" md="2" lg="1" class="pa-0">
             <img
               alt="logo"
-              src="@/static/logo.png"
+              :src="logoUrl"
               :height="appBarHeight"
               style="cursor: pointer"
               @click="gotoHomepage()"
@@ -28,9 +28,11 @@
 
 <script lang="ts">
 
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
+import TheRightAppBar from '~/components/TheRightAppBar.vue';
 
 export default defineComponent({
+  components: { TheRightAppBar },
   data () {
     return {
       appBarHeight: 50
@@ -39,7 +41,10 @@ export default defineComponent({
 
   computed: {
     companyName () {
-      return this.$store.state.config.companyName
+      return "";
+    },
+    logoUrl () {
+      return require("~/assets/logo.png");
     }
   },
 

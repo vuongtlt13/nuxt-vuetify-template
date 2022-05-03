@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <Nuxt/>
+    <v-main class="main-background">
+      <Nuxt/>
+    </v-main>
     <notifications classes="my-notification" position="top right"/>
   </v-app>
 </template>

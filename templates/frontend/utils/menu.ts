@@ -4,10 +4,12 @@ import { MenuType } from '~/utils/constants';
 export interface Menu {
   type: string
   title: string
-  icon: string|null
-  to: string|object|null
-  activeClass: string
-  children: Menu[]
+  icon?: string
+  to?: string | object
+  activeClass?: string
+  class?: string
+  tooltip?: string
+  children?: Menu[]
 }
 
 const menuComponents: Menu[] = [

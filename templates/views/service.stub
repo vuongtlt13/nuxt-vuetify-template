@@ -1,38 +1,11 @@
 import { DataOptions, DataTableHeader } from 'vuetify'
-import { $axios, $silentAxios, silentAxios } from '~/utils/api'
-import { cloneObject, findIndexInHeader } from '~/utils';
+import { $silentAxios, createAxiosFromConfig } from '~/utils/api'
 import { AxiosOption } from '~/types';
+import { BaseService } from '~/services/base-service';
 
 const $MODEL_NAME$Service = {
   async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any) {
-    const clone = cloneObject(options);
-    const { page, itemsPerPage, sortBy, sortDesc } = clone
-    keyword = keyword.trim()
-    let finalSortBy = sortBy.map((value: string) => {
-      return findIndexInHeader(value, headers)
-    })
-    let finalSortDesc = sortDesc.map((value: boolean) => {
-      return value ? "desc" : "asc"
-    });
-
-    if (finalSortBy.includes(-1)) {
-      finalSortBy = null;
-      finalSortDesc = null
-    }
-    return await $silentAxios.get('/$MODEL_NAME_PLURAL_DASHED$', {
-      params: {
-        q: keyword,
-        s: Math.max((page - 1) * itemsPerPage, 0),
-        ipp: itemsPerPage,
-        sb: finalSortBy,
-        sd: finalSortDesc,
-        ...params
-      }
-    }).then((resp) => {
-      let total = resp.data.data.recordsTotal;
-      let items = resp.data.data.items;
-      return {total, items}
-    })
+    return BaseService.fetchData('/$MODEL_NAME_PLURAL_DASHED$', options, keyword, headers, params)
   },
 
   async loadCreate$MODEL_NAME$Option (params: any) {
@@ -48,28 +21,28 @@ const $MODEL_NAME$Service = {
   },
 
   async addNew$MODEL_NAME$ (data: any, axiosOpts?: AxiosOption) {
-    let axios = $axios
-    if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
-      axios = silentAxios(axiosOpts)
-    }
+    const axios = createAxiosFromConfig(axiosOpts)
     return await axios.post('/$MODEL_NAME_PLURAL_DASHED$', data)
   },
 
   async update$MODEL_NAME$ (id: any, data: any, axiosOpts?: AxiosOption) {
-    let axios = $axios
-    if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
-      axios = silentAxios(axiosOpts)
-    }
+    const axios = createAxiosFromConfig(axiosOpts)
     return await axios.put(`/$MODEL_NAME_PLURAL_DASHED$/${id}`, data)
   },
 
   async delete$MODEL_NAME$ (id: any, axiosOpts?: AxiosOption) {
-    let axios = $axios
-    if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError)) {
-      axios = silentAxios(axiosOpts)
-    }
+    const axios = createAxiosFromConfig(axiosOpts)
     return await axios.delete(`/$MODEL_NAME_PLURAL_DASHED$/${id}`)
-  }
+  },
+
+  async delete$MODEL_NAME_PLURAL$ (ids: any[], axiosOpts?: AxiosOption) {
+    const axios = createAxiosFromConfig(axiosOpts)
+    return await axios.delete(`/$MODEL_NAME_PLURAL_DASHED$/batch`, {
+      data: {
+        items: ids
+      }
+    })
+  },
 }
 
 export default $MODEL_NAME$Service

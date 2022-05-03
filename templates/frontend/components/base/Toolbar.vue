@@ -113,6 +113,7 @@
       <v-text-field
         v-if="searchable"
         v-model="innerSearch"
+        :clearable="true"
         append-icon="mdi-magnify"
         :label="$t('crud.search')"
         single-line
@@ -127,7 +128,7 @@
 
 <script lang="ts">
 
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({

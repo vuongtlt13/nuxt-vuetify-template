@@ -1,6 +1,6 @@
 <template>
   <v-row style="height: 100%; margin-top: auto;">
-    <v-spacer />
+    <v-spacer/>
     <v-col style="margin: auto; max-width: 40px">
       <v-menu
         offset-y
@@ -22,7 +22,8 @@
         </template>
         <v-list v-if="notifications.length > 0" three-line min-width="300px" max-width="360px" min-height="200px">
           <template v-for="(item, index) in notifications">
-            <a :href="isExternalLink(item.link) ? item.link : '#'" style="text-decoration: none; text-decoration-color: black">
+            <a :href="isExternalLink(item.link) ? item.link : '#'"
+               style="text-decoration: none; text-decoration-color: black">
               <v-list-item
                 :key="item.id"
                 link
@@ -32,8 +33,8 @@
               >
                 <template>
                   <v-list-item-content>
-                    <v-list-item-title style="color: black!important;" v-text="item.title" />
-                    <v-list-item-subtitle v-text="item.detail" />
+                    <v-list-item-title style="color: black!important;" v-text="item.title"/>
+                    <v-list-item-subtitle v-text="item.detail"/>
                     <v-list-item-subtitle style="margin: 3px 0 0 3px;">
                       <v-tooltip bottom>
                         <template #activator="{ on, attrs }">
@@ -70,7 +71,7 @@
         <template #activator="{ on, attrs }">
           <v-avatar size="32" style="cursor: pointer;margin: auto;display: table-cell" v-bind="attrs" v-on="on">
             <img
-              src="@/static/default_avatar.jpg"
+              src="~/assets/default_avatar.jpg"
               alt="Avatar"
             >
           </v-avatar>
@@ -82,25 +83,26 @@
             class="text-sm-body-2"
           >
             <v-list-item-content style="padding: 8px 0">
-              <v-list-item-title v-text="userName" />
+              <v-list-item-title v-text="userName"/>
             </v-list-item-content>
           </v-list-item>
-          <v-divider />
+          <v-divider/>
           <template v-for="(item, index) in items">
-            <v-divider v-if="item.divider" />
+            <v-divider v-if="item.divider"/>
             <v-list-item
               :key="index"
               link
               style="text-align: left;cursor: pointer;"
               class="text-sm-body-2"
+              @click="item.onclick"
             >
               <template v-if="item.icon">
                 <v-list-item-icon style="margin: 0 8px 0 0;padding: 8px 0">
-                  <v-icon v-text="item.icon" />
+                  <v-icon v-text="item.icon"/>
                 </v-list-item-icon>
               </template>
               <v-list-item-content style="padding: 8px 0">
-                <v-list-item-title v-text="item.title" />
+                <v-list-item-title v-text="item.title"/>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -111,9 +113,11 @@
 </template>
 <script lang="ts">
 import { mapActions, mapGetters } from 'vuex'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { diffTimeFromNow, standardDatetime } from '~/utils/datetime'
 import { isExternalLink, isInternalLink } from '~/utils'
+import { $store } from '~/utils/store';
+import { $redirect } from '~/utils/redirect';
 
 export default defineComponent({
   name: 'TheRightAppBar',
@@ -129,8 +133,22 @@ export default defineComponent({
   data () {
     return {
       items: [
-        { title: 'Profile', icon: 'mdi-account' },
-        { title: 'Logout', icon: 'mdi-logout', divider: true }
+        {
+          title: 'Profile',
+          icon: 'mdi-account',
+          onclick: () => {
+          }
+        },
+        {
+          title: 'Logout',
+          icon: 'mdi-logout',
+          divider: true,
+          onclick: () => {
+            $store.dispatch('auth/logout').finally(() => {
+              $redirect('auth/login')
+            })
+          }
+        }
       ]
     }
   },

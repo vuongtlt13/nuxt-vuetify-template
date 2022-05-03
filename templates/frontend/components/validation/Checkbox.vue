@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef, watch } from '@vue/composition-api'
+import { defineComponent, ref, toRef, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
@@ -30,18 +30,17 @@ export default defineComponent({
     const innerValue = useVModel(props, 'value')
     const checked = ref(innerValue.value)
 
+    watch(checked, () => {
+      context.emit('input', checked.value);
+    })
+
     watch(innerValue, () => {
       checked.value = innerValue.value
     })
 
-    watch(checked, () => {
-      context.emit('input', checked.value);
-    })
     return {
       checked,
     }
-  },
-  created() {
   }
 })
 </script>

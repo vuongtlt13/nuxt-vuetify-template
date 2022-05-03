@@ -3,6 +3,7 @@
     nav
     dense
     shaped
+    subheader
   >
     <v-list-item-group>
       <MenuNoChild
@@ -11,7 +12,6 @@
         icon="mdi-home"
         :title="$t('app.homepage')"
       />
-
       <template v-for="menu in menuComponents">
         <MenuNoChild v-if="menu.type === MenuType.NO_CHILD"
                      :to="menu.to"
@@ -20,12 +20,16 @@
                      :icon="menu.icon"
         />
         <MenuHasChild v-else-if="menu.type === MenuType.HAS_CHILD"
-                     :to="menu.to"
-                     :title="$t(menu.title)"
-                     :active-class="menu.activeClass"
-                     :icon="menu.icon"
-                     :children="menu.children"
+                      :to="menu.to"
+                      :title="$t(menu.title)"
+                      :active-class="menu.activeClass"
+                      :icon="menu.icon"
+                      :children="menu.children"
         />
+        <v-divider v-else-if="menu.type === MenuType.DIVIDER"></v-divider>
+        <v-subheader v-else-if="menu.type === MenuType.SUB_HEADER" :class="menu.class">
+          <span :class="(isUseMini ? ' d-none':'')">{{ menu.title }}</span>
+        </v-subheader>
       </template>
 
       <v-list-item :inactive="true" class="no-active" @click="toggleUseMini">
@@ -44,8 +48,8 @@
 
 <script lang="ts">
 
-import { mapGetters, mapActions } from 'vuex'
-import { defineComponent } from '@vue/composition-api'
+import { mapActions, mapGetters } from 'vuex'
+import { defineComponent } from '@nuxtjs/composition-api'
 import menuComponents from '~/utils/menu';
 import MenuNoChild from '~/components/menu/NoChild.vue';
 import MenuHasChild from '~/components/menu/HasChild.vue';

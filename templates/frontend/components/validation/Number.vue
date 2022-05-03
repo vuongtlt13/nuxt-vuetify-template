@@ -5,7 +5,7 @@
     :rules="rules"
   >
     <v-text-field
-      v-model="innerValue"
+      v-model.number="innerValue"
       type="number"
       :error-messages="v.errors"
       :success="v.valid && v.validated && v.dirty && showSuccess"
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
@@ -25,15 +25,13 @@ export default defineComponent({
     rules: { type: [Object, String], default: '' },
     showSuccess: { type: Boolean, default: true },
     name: { type: String, required: true },
-    value: { type: Number, default: null },
+    value: { type: [Number, String], default: null },
   },
-  setup (props) {
-    const innerValue = useVModel(props, 'value')
+  setup (props, context) {
+    const innerValue = useVModel(props, 'value', context.emit)
     return {
       innerValue
     }
-  },
-  created() {
   }
 })
 </script>

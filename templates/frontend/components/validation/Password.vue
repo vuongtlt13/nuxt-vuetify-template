@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
@@ -37,7 +37,6 @@ export default defineComponent({
       showPassword
     }
   },
-  methods: {
-  }
+  methods: {}
 })
 </script>

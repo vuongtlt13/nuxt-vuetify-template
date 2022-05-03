@@ -6,27 +6,20 @@
   >
     <BaseDataTable
       height="77vh"
-      :headers="$MODEL_NAME_CAMEL$Headers"
-      :search="$MODEL_NAME$Datatable.searchKeyword.value"
-      :items.sync="$MODEL_NAME_CAMEL$Datatable.items.value"
-      :selected-rows.sync="$MODEL_NAME_CAMEL$Datatable.selectedRows.value"
-      :draw.sync="$MODEL_NAME_CAMEL$Datatable.draw.value"
-      :fetch-data-func="fetch$MODEL_NAME$"
-      :fetch-extra-params="$MODEL_NAME_CAMEL$Datatable.fetchExtraParams.value"
+      :datatable-handler="$MODEL_NAME_CAMEL$Datatable"
       :show-select="false"
       @dblclick:row="$MODEL_NAME_CAMEL$UpdateModal.showEditItemByDoubleClick"
-      :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
       d-style="border-radius: inherit;"
       p-style=""
     >
       <template #top>
         <BaseToolbar
-          :search.sync="$MODEL_NAME$Datatable.searchKeyword.value"
+          :search.sync="$MODEL_NAME_CAMEL$Datatable.searchKeyword.value"
           :items-per-page.sync="$MODEL_NAME_CAMEL$Datatable.itemsPerPage.value"
-          :handle-create-fn="$MODEL_NAME_CAMEL$CreateModal.showCreateModal"
+          :select-all-fn="$MODEL_NAME_CAMEL$Datatable.selectAllItems"
+          :handle-create-fn="$MODEL_NAME_CAMEL$CreateModal.showModalFn"
           :handle-refresh-fn="$MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload"
-          :handle-delete-fn="$MODEL_NAME_CAMEL$DeleteConfirm.showDeleteItemsConfirm"
-          :select-all-fn="customerEMeterDatatable.selectAllItems"
+          :handle-delete-fn="$MODEL_NAME_CAMEL$DeleteConfirm.showDeleteItemsConfirmFromDatatable"
         >
           <template #filters>
             <$MODEL_NAME$FilterAndAction
@@ -53,51 +46,59 @@
     </BaseDataTable>
 
     <!--    region create modal-->
-    <BaseCreateOrUpdateModal
-      :is-show.sync="$MODEL_NAME_CAMEL$CreateModal.createDialog.value"
+    <BaseFormModal
+      :is-show.sync="$MODEL_NAME_CAMEL$CreateModal.showDialog.value"
       :form-title="$t('crud.add_new_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
-      :data="$MODEL_NAME_CAMEL$Datatable.selectedItem"
-      :options="$MODEL_NAME_CAMEL$CreateModal.createOptions.value"
-      :handle-submit="$MODEL_NAME_CAMEL$CreateModal.addNewRecord"
-      :handle-cancel="$MODEL_NAME_CAMEL$Datatable.resetSelectedRow"
+      :data="$MODEL_NAME_CAMEL$CreateModal.formData"
+      :options="$MODEL_NAME_CAMEL$CreateModal.formOptions.value"
+      :handle-submit="$MODEL_NAME_CAMEL$CreateModal.handleSubmitFn"
+      :handle-cancel="$MODEL_NAME_CAMEL$CreateModal.resetFormDataFn"
     >
       <template #fields="{initData, options}">
-        <$MODEL_NAME$Fields :init-data="initData" :options="options" :action-type="$MODEL_NAME_CAMEL$CreateModal.actionType"/>
+        <$MODEL_NAME$Fields :init-data="initData" :options="options"/>
       </template>
-    </BaseCreateOrUpdateModal>
+    </BaseFormModal>
     <!--    endregion create modal-->
 
     <!--    region update modal-->
-    <BaseCreateOrUpdateModal
-      :is-show.sync="$MODEL_NAME_CAMEL$UpdateModal.updateDialog.value"
+    <BaseFormModal
+      :is-show.sync="$MODEL_NAME_CAMEL$UpdateModal.showDialog.value"
       :form-title="$t('crud.edit_modal_title', { model: $t('models.$MODEL_NAME_CAMEL$.singular') })"
-      :data="$MODEL_NAME_CAMEL$Datatable.selectedItem"
-      :options="$MODEL_NAME_CAMEL$UpdateModal.updateOptions.value"
-      :handle-submit="$MODEL_NAME_CAMEL$UpdateModal.updateRecord"
-      :handle-cancel="$MODEL_NAME_CAMEL$Datatable.resetSelectedRow"
+      :data="$MODEL_NAME_CAMEL$UpdateModal.formData"
+      :options="$MODEL_NAME_CAMEL$UpdateModal.formOptions.value"
+      :handle-submit="$MODEL_NAME_CAMEL$UpdateModal.handleSubmitFn"
+      :handle-cancel="$MODEL_NAME_CAMEL$UpdateModal.resetFormDataFn"
     >
       <template #fields="{initData, options}">
-        <$MODEL_NAME$Fields :init-data="initData" :options=options :action-type="$MODEL_NAME_CAMEL$CreateModal.actionType"/>
+        <$MODEL_NAME$Fields :init-data="initData" :options="options"/>
       </template>
-    </BaseCreateOrUpdateModal>
+    </BaseFormModal>
     <!--    endregion update modal-->
   </v-card>
 </template>
 
 <script lang="ts">
-import BaseToolbar from '~/components/base/Toolbar.vue';
 import BaseDataTable from '~/components/base/DataTable.vue';
-import BaseCreateOrUpdateModal from '~/components/base/CreateOrUpdateModal.vue';
+import BaseFormModal from '~/components/base/FormModal.vue';
+import BaseToolbar from '~/components/base/Toolbar.vue';
+import useDataTable from '~/composables/useDataTable';
+import useFormModal from '~/composables/useFormModal';
+import useFormModalWithKey from '~/composables/useFormModalWithKey';
+import useConfirmDelete from '~/composables/useConfirmDelete';
 import { defineComponent } from '@vue/composition-api'
 import $MODEL_NAME_CAMEL$HeaderDataTable from '~/datatables/$MODEL_NAME_DASHED$/header'
 import $MODEL_NAME$Service from '~/services/$MODEL_NAME_DASHED$'
-import useDataTable from '~/composables/useDataTable';
-import useCreateModal from '~/composables/useCreateModal';
-import useUpdateModal from '~/composables/useUpdateModal';
-import useConfirmDelete from '~/composables/useConfirmDelete';
+import $MODEL_NAME$Fields from '~/components/$MODEL_NAME_DASHED$/Fields.vue';
+import $MODEL_NAME$FilterAndAction from '~/components/$MODEL_NAME_DASHED$/FilterAndAction.vue';
 
 export default defineComponent({
-  components: { BaseCreateOrUpdateModal, BaseDataTable, BaseToolbar },
+  components: {
+    BaseDataTable,
+    BaseFormModal,
+    BaseToolbar,
+    $MODEL_NAME$Fields,
+    $MODEL_NAME$FilterAndAction,
+  },
   layout: 'default',
   name: 'Page$MODEL_NAME$',
     meta: {
@@ -112,34 +113,48 @@ export default defineComponent({
   ],
   setup () {
     // region $MODEL_NAME$
-    // datatable init
+
+    // region datatable init
     const $MODEL_NAME_CAMEL$Datatable = useDataTable({
-      $DEFAULT_VALUES$
+      fetchDataFunc: $MODEL_NAME$Service.fetch$MODEL_NAME$,
+      headers: $MODEL_NAME_CAMEL$HeaderDataTable()
     })
+    // endregion
 
-    // create modal
-    const $MODEL_NAME_CAMEL$CreateModal = useCreateModal({
-      loadCreateOptionFn: $MODEL_NAME$Service.loadCreate$MODEL_NAME$Option,
-      createRecordFn: $MODEL_NAME$Service.addNew$MODEL_NAME$,
-      clearSelectionAndReloadFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload,
+    // region create modal
+    const $MODEL_NAME_CAMEL$CreateModal = useFormModal({
+      defaultData: {
+        $DEFAULT_VALUES$
+      },
+      loadOptionFn: $MODEL_NAME$Service.loadCreate$MODEL_NAME$Option,
+      handleSubmitFn: $MODEL_NAME$Service.addNew$MODEL_NAME$,
+      successCallbackOption: {
+        reloadTableFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload,
+      }
     })
+    // endregion
 
-    // update modal
-    const $MODEL_NAME_CAMEL$UpdateModal = useUpdateModal({
-      loadUpdateOptionFn: $MODEL_NAME$Service.loadUpdate$MODEL_NAME$Option,
-      updateRecordFn: $MODEL_NAME$Service.update$MODEL_NAME$,
-      selectedItem: $MODEL_NAME_CAMEL$Datatable.selectedItem,
-      clearSelectionAndReloadFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload,
-      actionType: $MODEL_NAME_CAMEL$CreateModal.actionType,
+    // region update modal
+    const $MODEL_NAME_CAMEL$UpdateModal = useFormModalWithKey({
+      loadOptionFn: $MODEL_NAME$Service.loadUpdate$MODEL_NAME$Option,
+      handleSubmitFn: $MODEL_NAME$Service.update$MODEL_NAME$,
+      successCallbackOption: {
+        reloadTableFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload,
+      }
     })
+    // endregion
 
-    // delete confirm
+    // region delete confirm
     const $MODEL_NAME_CAMEL$DeleteConfirm = useConfirmDelete({
       deleteRecordFn: $MODEL_NAME$Service.delete$MODEL_NAME$,
-      selectedItem: $MODEL_NAME_CAMEL$Datatable.selectedItem,
+      deleteRecordsFn: $MODEL_NAME$Service.delete$MODEL_NAME_PLURAL$,
       selectedRows: $MODEL_NAME_CAMEL$Datatable.selectedRows,
-      clearSelectionAndReloadFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload
+      successCallbackOption: {
+        reloadTableFn: $MODEL_NAME_CAMEL$Datatable.clearSelectionAndReload
+      }
     })
+    // endregion
+
     // endregion
 
     return {
@@ -152,15 +167,12 @@ export default defineComponent({
   data () {
     return {
       title: process.env.appName,
-      $MODEL_NAME_CAMEL$Headers: $MODEL_NAME_CAMEL$HeaderDataTable(),
     }
   },
   head () {
     return { title: this.$t('models.$MODEL_NAME_CAMEL$.singular').toString() }
   },
-  methods: {
-    fetch$MODEL_NAME$: $MODEL_NAME$Service.fetch$MODEL_NAME$
-  }
+  methods: {}
 })
 </script>
 

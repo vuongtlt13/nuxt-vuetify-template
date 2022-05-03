@@ -6,7 +6,7 @@
 import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
-  name: 'FilterAndAction',
+  name: '$MODEL_NAME$FilterAndAction',
   props: {},
 
   setup (props, context) {

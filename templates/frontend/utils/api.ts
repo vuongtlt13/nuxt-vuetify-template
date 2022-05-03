@@ -24,12 +24,6 @@ export function addDefaultRequestInterception (axios: NuxtAxiosInstance) {
       request.headers.common.Authorization = `Bearer ${token}`
     }
 
-    const locale = $store.getters['lang/locale']
-    if (locale) {
-      // @ts-ignore
-      request.headers.common['Accept-Language'] = locale
-    }
-
     if (request.method === 'put') {
       if (request.data === undefined) {
         request.data = {}
@@ -55,6 +49,7 @@ export function addDefaultResponseInterception (
   axiosOpts = {
     notifyWhenSuccess: true,
     notifyWhenError: true,
+    disableRedirect: false,
     ...axiosOpts
   }
   axios.interceptors.response.use((response: AxiosResponse) => {
@@ -63,9 +58,7 @@ export function addDefaultResponseInterception (
     }
     return response
   }, (error: any) => {
-    if (axiosOpts!.notifyWhenError) {
-      showNotificationFromErrorResponse(error)
-    }
+    showNotificationFromErrorResponse(error, axiosOpts)
     return Promise.reject(error)
   })
 }
@@ -102,4 +95,14 @@ export const makeOptionFromResponse = (optionResp: any) => {
   })
   return finalOptionResp
 }
+
+export const createAxiosFromConfig = (axiosOpts?: AxiosOption) => {
+  let axios = $axios
+  if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError || axiosOpts.disableRedirect)) {
+    axios = silentAxios(axiosOpts)
+  }
+
+  return axios
+}
+
 export { $axios, $silentAxios }

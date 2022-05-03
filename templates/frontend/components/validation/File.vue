@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
@@ -41,7 +41,7 @@ export default defineComponent({
       file
     }
   },
-  created() {
+  created () {
   }
 })
 </script>

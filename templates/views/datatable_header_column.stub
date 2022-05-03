@@ -1,8 +1,7 @@
 {
   text: i18n.t('models.$MODEL_NAME_CAMEL$.fields.$FIELD_NAME$').toString(),
-  align: 'center',
   sortable: $ORDERABLE$,
   value: '$FIELD_NAME$',
-  class: 'v-header',
+  class: 'v-header text-center',
   cellClass: '$CSS_CLASS$'
 }

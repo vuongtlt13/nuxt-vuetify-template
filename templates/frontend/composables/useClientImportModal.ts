@@ -1,4 +1,4 @@
-import { nextTick, ref, watch } from '@vue/composition-api';
+import { nextTick, ref, watch } from '@nuxtjs/composition-api';
 import { makeOptionFromResponse } from "~/utils/api";
 import { ProgressStatus } from '~/types';
 
@@ -13,7 +13,7 @@ function useCreateModal<T> (option: UseCreateModalOption<T>) {
   const importDialog = ref(false)
   const importData = ref({})
   const importOptions = ref({})
-  const importProgress  = ref<ProgressStatus>({
+  const importProgress = ref<ProgressStatus>({
     importing: false,
     total: 0,
     done: 0

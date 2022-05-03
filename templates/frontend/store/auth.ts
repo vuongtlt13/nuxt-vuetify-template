@@ -4,8 +4,8 @@ import AuthService from '~/services/auth'
 import { TOKEN_KEY } from '~/utils/constants'
 
 interface AuthState {
-  user: any|null,
-  token: string|null
+  user: any | null,
+  token: string | null
 }
 
 // state
@@ -51,7 +51,7 @@ export const mutations = {
 
 // actions
 export const actions = {
-  saveToken ({ commit }: any, { token, remember } : {token: string, remember: boolean}) {
+  saveToken ({ commit }: any, { token, remember }: { token: string, remember: boolean }) {
     commit('SET_TOKEN', token)
 
     Cookies.set(TOKEN_KEY, token, { expires: remember ? 365 : undefined })
@@ -74,7 +74,8 @@ export const actions = {
   },
 
   async logout ({ commit }: any) {
-    await ($axios.create()).post('/logout').catch(() => {}).finally(
+    return await ($axios.create()).post('/logout').catch(() => {
+    }).finally(
       () => {
         Cookies.remove(TOKEN_KEY)
         commit('LOGOUT')

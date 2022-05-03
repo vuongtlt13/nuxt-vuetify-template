@@ -8,7 +8,7 @@
   >
     <template v-slot:activator>
       <v-list-item-content>
-        <v-list-item-title class="text-left">{{title}}</v-list-item-title>
+        <v-list-item-title class="text-left">{{ title }}</v-list-item-title>
       </v-list-item-content>
     </template>
 
@@ -30,27 +30,22 @@
                     :sub-group="true"
       />
     </template>
-<!--    <v-list-item>-->
-<!--      <v-list-item-content>-->
-<!--        <v-list-item-title>Chan</v-list-item-title>-->
-<!--      </v-list-item-content>-->
-<!--    </v-list-item>-->
+    <!--    <v-list-item>-->
+    <!--      <v-list-item-content>-->
+    <!--        <v-list-item-title>Chan</v-list-item-title>-->
+    <!--      </v-list-item-content>-->
+    <!--    </v-list-item>-->
 
   </v-list-group>
 </template>
 
-<script>
-import {defineComponent} from "@vue/composition-api";
-import MenuNoChild from '~/components/menu/NoChild.vue';
-import MenuHasChild from '~/components/menu/HasChild.vue';
+<script lang="ts">
+import { defineComponent } from "@nuxtjs/composition-api";
 import { MenuType } from '~/utils/constants';
 
 export default defineComponent({
   name: "MenuHasChild",
-  components: {
-    MenuNoChild,
-    MenuHasChild
-  },
+  head: {},
   props: {
     activeClass: {
       type: String,
@@ -58,7 +53,7 @@ export default defineComponent({
     },
     icon: {
       type: String,
-      default: () => null
+      default: ""
     },
     title: {
       type: String,
@@ -70,14 +65,16 @@ export default defineComponent({
     },
     subGroup: {
       type: Boolean,
-      default: () => false
+      default: false
     },
     value: {
       type: Boolean,
-      default: () => true
+      default: true
     }
   },
-  data() {
+  setup () {
+  },
+  data () {
     return {
       MenuType
     }

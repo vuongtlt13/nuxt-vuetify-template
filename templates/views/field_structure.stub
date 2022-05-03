@@ -9,7 +9,7 @@ import { defineComponent, Ref, watch } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'Fields',
+  name: '$MODEL_NAME$Fields',
   props: {
     initData: {
       type: Object,

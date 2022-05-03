@@ -6,6 +6,7 @@
   >
     <v-text-field
       v-model="innerValue"
+      :style="`width: ${width};margin: auto`"
       :error-messages="v.errors"
       :success="v.valid && v.validated && v.dirty && showSuccess"
       v-bind="$attrs"
@@ -15,8 +16,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
 import { useVModel } from '@vueuse/core'
+import { defineComponent } from '@nuxtjs/composition-api';
 
 export default defineComponent({
   name: 'ValidationText',
@@ -24,6 +25,7 @@ export default defineComponent({
     rules: { type: [Object, String], default: '' },
     showSuccess: { type: Boolean, default: true },
     name: { type: String, required: true },
+    width: { type: String, default: "unset" },
     value: { type: [String, Number], default: '' },
   },
   setup (props) {
@@ -32,7 +34,7 @@ export default defineComponent({
       innerValue
     }
   },
-  created() {
+  created () {
   }
 })
 </script>

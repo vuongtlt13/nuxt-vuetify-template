@@ -1,12 +1,10 @@
 import { Queue } from '~/utils/queue';
 import * as uuid from 'uuid'
 import { sleep } from '~/utils/index';
-import { JobStatus, ProgressStatus, StringMap } from '~/types';
+import { JobStatus, ProgressStatus } from '~/types';
 import Vue from 'vue';
 import { i18n } from '~/plugins/i18n';
 import { NOTIFICATION_DURATION } from '~/utils/constants';
-import { rowDataToFormData } from '~/utils/xlsx';
-import { AxiosResponse } from 'axios';
 
 interface IJob<T> {
   start (): Promise<JobStatus>

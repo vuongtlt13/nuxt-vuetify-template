@@ -1,14 +1,18 @@
-import { ref, onMounted } from '@vue/composition-api';
+import { onMounted, Ref, ref } from '@nuxtjs/composition-api';
 import { makeOptionFromResponse } from '~/utils/api';
 
 interface UseFilterOption<T> {
+  defaultData?: T
   loadFilterOptionFn?: (params: any) => Promise<any>
   loadFilterOptionParams?: any
 }
 
 function useFilter<T> (option: UseFilterOption<T>) {
   // for toggle show/hide create modal
-  const filters = ref({})
+  const filters: Ref<T> = ref(({
+    ...option.defaultData
+  } || {}) as T) as Ref<T>
+
   const options = ref({})
 
   onMounted(() => {

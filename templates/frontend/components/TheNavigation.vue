@@ -2,20 +2,24 @@
   <v-navigation-drawer
     v-model="drawer"
     :mini-variant="isUseMini"
+    width="16vw"
+    style="max-width: 215px;"
     :permanent="drawer"
     app
     clipped
   >
-    <TheMenu />
+    <TheMenu/>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import { mapActions, mapGetters } from 'vuex'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
+import TheMenu from '~/components/TheMenu.vue';
 
 export default defineComponent({
   name: 'TheNavigation',
+  components: { TheMenu },
   computed: {
     ...mapGetters([
       'isDrawer',

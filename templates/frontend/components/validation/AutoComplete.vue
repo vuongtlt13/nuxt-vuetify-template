@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 import { DataOptions } from 'vuetify';
 
@@ -35,7 +35,11 @@ export default defineComponent({
     value: { type: [String, Number], default: '' },
     delay: { type: Number, default: 320 },
     fetchFn: { type: Function, require: true },
-    fetchData: { type: Object, default: () => {return {}} },
+    fetchData: {
+      type: Object, default: () => {
+        return {}
+      }
+    },
     reducer: { type: Function, require: true },
     limit: { type: Number, default: 25 }
   },
@@ -87,7 +91,7 @@ export default defineComponent({
     }
   },
   computed: {
-    items(): any[] {
+    items (): any[] {
       return this.entries.map(this.reducer!)
     }
   }

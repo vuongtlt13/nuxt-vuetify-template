@@ -65,8 +65,7 @@ export default {
     '~/plugins/sweetalert2',
 
     '~/plugins/store-accessor',
-    '~/plugins/redirect-accessor',
-    '~/plugins/sweetalert2-accessor',
+    '~/plugins/redirect-accessor'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -86,6 +85,7 @@ export default {
     '@nuxtjs/router',
     '@nuxtjs/axios',
     '@nuxtjs/moment',
+    '@nuxtjs/composition-api/module',
     'vue-sweetalert2/nuxt'
   ],
 
@@ -116,7 +116,7 @@ export default {
     extractCSS: true,
     transpile: [
       'vee-validate/dist/rules'
-    ]
+    ],
   },
 
   watchers: {
@@ -128,29 +128,16 @@ export default {
       ignored: /(node_modules)|(.git)|(vendor)/
     }
   },
-  
+
   hooks: {
-    // build: {
-    //   done(generator) {
-    //     console.log(generator)
-    //     // Copy dist files to public/_nuxt
-    //     if (generator.nuxt.options.dev === false && generator.nuxt.options.mode === 'spa') {
-    //       const publicDir = join(generator.nuxt.options.rootDir, 'public', '_nuxt')
-    //       removeSync(publicDir)
-    //       copySync(join(generator.nuxt.options.generate.dir, '_nuxt'), publicDir)
-    //       copySync(join(generator.nuxt.options.generate.dir, '200.html'), join(publicDir, 'index.html'))
-    //       removeSync(generator.nuxt.options.generate.dir)
-    //     }
-    //   }
-    // },
     generate: {
       done(generator) {
         // Copy dist files to public/_nuxt
         if (generator.nuxt.options.dev === false && generator.nuxt.options.mode === 'spa') {
           const publicDir = join(generator.nuxt.options.rootDir, 'public', '_nuxt')
           removeSync(publicDir)
-          copySync(join(generator.nuxt.options.generate.dir, '_nuxt'), publicDir)
-          copySync(join(generator.nuxt.options.generate.dir, '200.html'), join(publicDir, 'index.html'))
+          copySync(join(generator.nuxt.options.generate.dir, '_nuxt'), publicDir, {})
+          copySync(join(generator.nuxt.options.generate.dir, '200.html'), join(publicDir, 'index.html'), {})
           removeSync(generator.nuxt.options.generate.dir)
         }
       }

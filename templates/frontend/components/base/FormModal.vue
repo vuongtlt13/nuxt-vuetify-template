@@ -40,14 +40,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRef } from '@vue/composition-api'
+import { defineComponent, toRef } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'BaseCreateOrUpdateModal',
+  name: 'BaseFormModal',
   props: {
     isShow: Boolean,
-    formTitle: {type: String, default: ''},
+    formTitle: { type: String, default: '' },
     width: {
       type: String,
       default: "70vw"
@@ -87,7 +87,7 @@ export default defineComponent({
     const innerData = toRef(props, 'data')
     const keyFunc = props.keyFn
       ? (props.keyFn)
-      :  (
+      : (
         (data: any) => {
           return data.id
         }
