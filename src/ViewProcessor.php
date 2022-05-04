@@ -57,7 +57,7 @@ class ViewProcessor extends BaseCommand {
         $fileName = "package.json";
 
         if (file_exists($destPath.$fileName) && !$this->force) {
-            $this->commandData->commandInfo('Package.json existed! Skip!');
+            $this->info('Package.json existed! Skip!');
             return;
         }
 
@@ -73,7 +73,7 @@ class ViewProcessor extends BaseCommand {
         $fileName = "tsconfig.json";
 
         if (file_exists($destPath.$fileName) && !$this->force) {
-            $this->commandData->commandInfo('tsconfig.json existed! Skip!');
+            $this->info('tsconfig.json existed! Skip!');
             return;
         }
 
