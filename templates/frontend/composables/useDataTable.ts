@@ -3,7 +3,6 @@ import Vue from 'vue';
 import { i18n } from '~/plugins/i18n';
 import { KeyCode, NOTIFICATION_DURATION } from '~/utils/constants';
 import $ from 'jquery';
-import customerEMeterHistoryHeaderDataTable from '~/datatables/customer-e-meter-history/header';
 import {
   AxiosOption,
   DataTableHandler,
@@ -153,7 +152,7 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
 
       let data: any = items.value[activeCell.parent().index()]
       let row = data.id;
-      let column = customerEMeterHistoryHeaderDataTable()[activeCell.index()].value
+      let column = headers[activeCell.index()].value
       if (selectedCell.value.row != row || selectedCell.value.column != column) {
         selectedCell.value.row = row
         selectedCell.value.column = column
