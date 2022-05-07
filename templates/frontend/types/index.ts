@@ -43,7 +43,7 @@ export type DataTableValidateAndUpdateRowFunc = (invalid: boolean, item: any, se
 
 export type DataTableValidateAndUpdateRowCallbackFunc = (invalid: boolean, item: any, axiosOpts?: AxiosOption) => Promise<any>;
 
-export type FetchDatatableFunc = (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any) => Promise<any>
+export type FetchDatatableFunc = (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any, action?: string) => Promise<any>
 
 export interface DataTableHandler {
   items: Ref<any[]>
@@ -54,6 +54,8 @@ export interface DataTableHandler {
   selectedRows: Ref<any>
   selectedCell: Ref<SelectedCellDataTable>
   draw: Ref<number>
+  options: Ref<DataOptions>
+  exportData: (action: string) => Promise<any>
   searchKeyword: Ref<any>
   fetchExtraParams: Ref<any>
   selectAllItems: () => void

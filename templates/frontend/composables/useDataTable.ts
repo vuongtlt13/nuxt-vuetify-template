@@ -3,6 +3,7 @@ import Vue from 'vue';
 import { i18n } from '~/plugins/i18n';
 import { KeyCode, NOTIFICATION_DURATION } from '~/utils/constants';
 import $ from 'jquery';
+import customerEMeterHistoryHeaderDataTable from '~/datatables/customer-e-meter-history/header';
 import {
   AxiosOption,
   DataTableHandler,
@@ -38,6 +39,17 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
   const itemsPerPage = ref(option.initItemPerPage || 25)
 
   const searchKeyword = ref('')
+
+  const options = ref<DataOptions>({
+    page: 1,
+    itemsPerPage: itemsPerPage.value,
+    sortBy: [],
+    sortDesc: []
+  } as unknown as DataOptions)
+
+  watch(itemsPerPage, (currentValue) => {
+    options.value.itemsPerPage = currentValue
+  })
 
   // store all selected rows
   const selectedRows = ref([])
@@ -140,6 +152,15 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
     })
   }
 
+  const exportData = (action: string) => {
+    // return () => {
+    //   console.log("ok");
+    //
+    // }
+    console.log(action);
+    return option.fetchDataFunc(options.value, searchKeyword.value, option.headers, fetchExtraParams.value, action)
+  }
+
   const headers = option.headers
 
   let validateAndUpdateRow: DataTableValidateAndUpdateRowFunc | undefined = undefined;
@@ -152,7 +173,7 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
 
       let data: any = items.value[activeCell.parent().index()]
       let row = data.id;
-      let column = headers[activeCell.index()].value
+      let column = customerEMeterHistoryHeaderDataTable()[activeCell.index()].value
       if (selectedCell.value.row != row || selectedCell.value.column != column) {
         selectedCell.value.row = row
         selectedCell.value.column = column
@@ -230,6 +251,8 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
     selectedRows,
     selectedCell,
     draw,
+    options,
+    exportData,
     searchKeyword,
     fetchExtraParams,
     selectAllItems,

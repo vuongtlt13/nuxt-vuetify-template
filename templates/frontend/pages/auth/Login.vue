@@ -5,7 +5,7 @@
         <v-card class="mx-auto rounded-lg" max-width="500px" style="margin-top: 5%">
           <v-row style="margin: auto">
             <v-col style="margin: auto; text-align: center;">
-              <h1>Login to {{ appName }}</h1>
+              <h1>{{ $t('auth.login_to') }} {{ appName }}</h1>
               <br><br>
               <ValidationObserver ref="obs" v-slot="{ invalid, validated }">
                 <form @submit.prevent="submit">

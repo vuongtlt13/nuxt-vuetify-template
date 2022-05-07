@@ -4,8 +4,8 @@ import { AxiosOption } from '~/types';
 import { BaseService } from '~/services/base-service';
 
 const $MODEL_NAME$Service = {
-  async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any) {
-    return BaseService.fetchData('/$MODEL_NAME_PLURAL_DASHED$', options, keyword, headers, params)
+  async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any, action?: any) {
+    return BaseService.fetchData('/$MODEL_NAME_PLURAL_DASHED$', options, keyword, headers, params, action)
   },
 
   async loadCreate$MODEL_NAME$Option (params: any) {

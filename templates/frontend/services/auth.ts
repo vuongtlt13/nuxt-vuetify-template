@@ -1,12 +1,18 @@
-import { $axios } from '~/utils/api'
+import { $axios, createAxiosFromConfig } from '~/utils/api'
+import { AxiosOption } from '~/types';
 
 const AuthService = {
   async login (credential: any) {
     return await $axios.post('/auth/login', credential)
   },
 
-  async fetchUserInfo () {
-    return await $axios.get('/user-info')
+  async fetchUserInfo (axiosOpts?: AxiosOption) {
+    const axios = createAxiosFromConfig({
+      notifyWhenSuccess: false,
+      notifyWhenError: false,
+      ...axiosOpts
+    })
+    return await axios.get('/user-info')
   }
 }
 
