@@ -62,7 +62,7 @@ export default defineComponent({
       'check'
     ]),
     usernameField () {
-      return 'username'
+      return 'email'
     }
   },
   mounted () {

@@ -134,18 +134,19 @@ export default defineComponent({
     return {
       items: [
         {
-          title: 'Profile',
+          title: this.$t('auth.app.profile'),
           icon: 'mdi-account',
           onclick: () => {
+            $redirect('/profile')
           }
         },
         {
-          title: 'Logout',
+          title: this.$t('auth.logout'),
           icon: 'mdi-logout',
           divider: true,
           onclick: () => {
             $store.dispatch('auth/logout').finally(() => {
-              $redirect('auth/login')
+              $redirect('/auth/login')
             })
           }
         }

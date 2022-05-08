@@ -128,18 +128,9 @@ export const showNotificationFromErrorResponse = (err: any, axiosOpts?: AxiosOpt
       })
     if (!axiosOpts?.disableRedirect) {
       $store.dispatch('auth/logout').finally(() => {
-        $redirect('auth/login')
+        $redirect('/')
       })
     }
-  } else if (resp.status === HttpCode.PERMISSION_DENIED) {
-    $error({
-      statusCode: resp.status,
-      message: resp.data.message,
-      extra: {
-        text: "Gia hạn",
-        url: "/extend-license"
-      }
-    })
   } else {
     if (axiosOpts?.notifyWhenError)
       Vue.notify({
@@ -148,6 +139,17 @@ export const showNotificationFromErrorResponse = (err: any, axiosOpts?: AxiosOpt
         text: resp.data.message || resp.data.error,
         duration: NOTIFICATION_DURATION
       })
+
+    const error = ((resp.data || {}).data || {}).error || null;
+
+    if (error !== undefined) {
+      let extra = {};
+      $error({
+        statusCode: resp.status,
+        message: resp.data.message,
+        extra: extra
+      })
+    }
   }
 }
 
