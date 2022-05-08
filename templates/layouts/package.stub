@@ -6,6 +6,7 @@
     "build": "nuxt build -c frontend/nuxt.config.js",
     "start": "nuxt start -c frontend/nuxt.config.js",
     "generate": "nuxt generate -c frontend/nuxt.config.js",
+    "analyze": "nuxt build --analyze -c frontend/nuxt.config.js",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore frontend/",
     "lint": "yarn lint:js"
   },
