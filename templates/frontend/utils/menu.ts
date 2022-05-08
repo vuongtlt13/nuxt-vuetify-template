@@ -9,7 +9,8 @@ export interface Menu {
   activeClass?: string
   class?: string
   tooltip?: string
-  children?: Menu[]
+  children?: Menu[],
+  permissions?: string[]
 }
 
 const menuComponents: Menu[] = [
