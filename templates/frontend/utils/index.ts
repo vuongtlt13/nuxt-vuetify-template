@@ -142,7 +142,7 @@ export const showNotificationFromErrorResponse = (err: any, axiosOpts?: AxiosOpt
 
     const error = ((resp.data || {}).data || {}).error || null;
 
-    if (error !== undefined) {
+    if (typeof error === 'object' && error !== null && error.code !== undefined) {
       let extra = {};
       $error({
         statusCode: resp.status,
