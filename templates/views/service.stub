@@ -1,11 +1,10 @@
-import { DataOptions, DataTableHeader } from 'vuetify'
-import { $silentAxios, createAxiosFromConfig } from '~/utils/api'
-import { AxiosOption } from '~/types';
+import { createAxiosFromConfig } from '~/utils/api'
+import { AxiosOption, FetchDatatableOption } from '~/types';
 import { BaseService } from '~/services/base-service';
 
 const $MODEL_NAME$Service = {
-  async fetch$MODEL_NAME$ (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any, action?: any) {
-    return BaseService.fetchData('/$MODEL_NAME_PLURAL_DASHED$', options, keyword, headers, params, action)
+  async fetch$MODEL_NAME$ (fetchDataOption: FetchDatatableOption) {
+    return BaseService.fetchData('/$MODEL_NAME_PLURAL_DASHED$', fetchDataOption)
   },
 
   async loadCreate$MODEL_NAME$Option (params: any) {

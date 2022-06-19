@@ -1,20 +1,19 @@
-import { nextTick, Ref, ref, watch } from '@nuxtjs/composition-api';
-import Vue from 'vue';
-import { i18n } from '~/plugins/i18n';
-import { KeyCode, NOTIFICATION_DURATION } from '~/utils/constants';
-import $ from 'jquery';
-import customerEMeterHistoryHeaderDataTable from '~/datatables/customer-e-meter-history/header';
+import { nextTick, Ref, ref, watch } from '@nuxtjs/composition-api'
+import Vue from 'vue'
+import $ from 'jquery'
+import { DataOptions, DataTableHeader } from 'vuetify'
+import { i18n } from '~/plugins/i18n'
+import { KeyCode, NOTIFICATION_DURATION } from '~/utils/constants'
 import {
   AxiosOption,
   DataTableHandler,
-  DataTableValidateAndUpdateRowCallbackFunc,
-  DataTableValidateAndUpdateRowFunc,
+  DataTableUpdateRowCallbackFunc,
+  DataTableUpdateRowFunc,
   FetchDatatableFunc,
-  SelectedCellDataTable,
-} from '~/types';
-import { makeValidateAndUpdateRowDatatableFunc, scrollIntoView } from '~/utils';
-import { DataOptions, DataTableHeader } from 'vuetify';
-import { makeOptionFromResponse } from '~/utils/api';
+  SelectedCellDataTable
+} from '~/types'
+import { makeUpdateRowDatatableFunc, scrollIntoView } from '~/utils'
+import { makeOptionFromResponse } from '~/utils/api'
 
 interface UseDataTableOption {
   fetchDataFunc: FetchDatatableFunc
@@ -22,8 +21,9 @@ interface UseDataTableOption {
   initFetchExtraParams?: any
   initItemPerPage?: number
   editable?: boolean
-  validateAndUpdateRowCallback?: DataTableValidateAndUpdateRowCallbackFunc
-  axiosOption?: AxiosOption
+  editUpdateRowCallback?: DataTableUpdateRowCallbackFunc
+  editValidateData?: (item: any) => boolean
+  editAxiosOption?: AxiosOption
 }
 
 const useDataTable = (option: UseDataTableOption): DataTableHandler => {
@@ -49,16 +49,17 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
 
   watch(itemsPerPage, (currentValue) => {
     options.value.itemsPerPage = currentValue
+    options.value.page = 1
   })
 
   // store all selected rows
   const selectedRows = ref([])
 
   const defaultSelectedCell = {
-    row: "",
-    column: "",
-    value: "",
-    origin: "",
+    row: '',
+    column: '',
+    value: '',
+    origin: '',
     item: {},
     render: false
   } as SelectedCellDataTable
@@ -75,9 +76,9 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
 
   const closeEditor = () => {
     nextTick(() => {
-      selectedCell.value.value = selectedCell.value.origin;
+      selectedCell.value.value = selectedCell.value.origin
       nextTick(() => {
-        selectedCell.value.render = false;
+        selectedCell.value.render = false
       })
     })
     // selectedCell.value.render = false;
@@ -89,7 +90,7 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
   const fetchExtraParams = ref<any>(option.initFetchExtraParams || {} as any)
 
   watch(fetchExtraParams, () => {
-    reloadTableFn()
+    clearSelectionAndReload()
   }, {
     deep: true
   })
@@ -126,9 +127,9 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
   }
 
   const clearSelectionAndReload = (delay: boolean | undefined = false) => {
-    selectedRows.value = [];
-    resetSelectedCell();
-    reloadTableFn(delay);
+    selectedRows.value = []
+    resetSelectedCell()
+    reloadTableFn(delay)
   }
 
   const updateSelectedCell = (row: any, column: any) => {
@@ -138,43 +139,50 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
 
   const fetchDatatableFunc = (loading: Ref, options: DataOptions) => {
     loading.value = true
-    option.fetchDataFunc(options, searchKeyword.value, option.headers, fetchExtraParams.value)
+    option.fetchDataFunc({
+      options,
+      keyword: searchKeyword.value,
+      headers: option.headers,
+      params: fetchExtraParams.value
+    })
       .then((data: any) => {
         items.value = data.items
         totalItem.value = data.total
-        let extra = {
+        const extra = {
           ...data.extra
         }
-        extra.options = makeOptionFromResponse(data.options || {});
+        extra.options = makeOptionFromResponse(data.options || {})
         extraData.value = extra
-      }).finally(() => {
-      loading.value = false
-    })
+      })
+      .finally(() => {
+        loading.value = false
+      })
   }
 
   const exportData = (action: string) => {
-    // return () => {
-    //   console.log("ok");
-    //
-    // }
-    console.log(action);
-    return option.fetchDataFunc(options.value, searchKeyword.value, option.headers, fetchExtraParams.value, action)
+    return option.fetchDataFunc({
+      options: options.value,
+      keyword: searchKeyword.value,
+      headers: option.headers,
+      params: fetchExtraParams.value,
+      action: action
+    })
   }
 
   const headers = option.headers
 
-  let validateAndUpdateRow: DataTableValidateAndUpdateRowFunc | undefined = undefined;
+  let updateRowFunc: DataTableUpdateRowFunc | undefined
 
   if (option.editable) {
     const changeActiveCell = (evt: any) => {
-      $('div.editable-datatable').find('table > tbody > tr > td').removeClass('selectedCell');
-      let activeCell = $(evt.target).closest('td');
+      $('div.editable-datatable').find('table > tbody > tr > td').removeClass('selectedCell')
+      const activeCell = $(evt.target).closest('td')
       activeCell.addClass('selectedCell')
 
-      let data: any = items.value[activeCell.parent().index()]
-      let row = data.id;
-      let column = customerEMeterHistoryHeaderDataTable()[activeCell.index()].value
-      if (selectedCell.value.row != row || selectedCell.value.column != column) {
+      const data: any = items.value[activeCell.parent().index()]
+      const row = data.id
+      const column = option.headers[activeCell.index()].value
+      if (selectedCell.value.row !== row || selectedCell.value.column !== column) {
         selectedCell.value.row = row
         selectedCell.value.column = column
         selectedCell.value.value = data[column]
@@ -183,62 +191,72 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
         selectedCell.value.render = false
       }
     }
-    validateAndUpdateRow = makeValidateAndUpdateRowDatatableFunc(option.validateAndUpdateRowCallback, option.axiosOption)
+
+    updateRowFunc = makeUpdateRowDatatableFunc(option.editUpdateRowCallback, option.editAxiosOption)
+
     const computeSelectedCell = () => {
-      return [selectedCell.value.render, selectedCell.value.item, selectedCell.value.row, selectedCell.value.column, selectedCell.value.value]
+      return [
+        selectedCell.value.render,
+        selectedCell.value.item,
+        selectedCell.value.row,
+        selectedCell.value.column,
+        selectedCell.value.value,
+        selectedCell.value.origin
+      ]
     }
+
     watch(computeSelectedCell, (n, o) => {
-      if (o[0] && !n[0] && validateAndUpdateRow) {
-        let oldSelectedCell: SelectedCellDataTable = {
+      if (o[0] && !n[0] && updateRowFunc) {
+        const oldSelectedCell: SelectedCellDataTable = {
           row: o[2],
           column: o[3],
           value: o[4],
-          origin: o[4],
+          origin: o[5],
           item: o[1],
           render: false
         }
-        validateAndUpdateRow!(false, oldSelectedCell.item, oldSelectedCell)
+        const isValid = (!option.editValidateData) || option.editValidateData(oldSelectedCell.item)
+        updateRowFunc!(!isValid, oldSelectedCell.item, oldSelectedCell)
       }
     })
+
     $(function () {
       $('div.editable-datatable').off('click').on('click', 'table tbody tr td', changeActiveCell)
       $('body').off('keydown').on('keydown', (evt: any) => {
-        if ([KeyCode.DownArrow, KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.Enter, KeyCode.Escape].indexOf(evt.keyCode) > -1) {
-          evt.preventDefault();
-          let activeCell = $('div.editable-datatable table td.selectedCell');
+        if ([KeyCode.DownArrow, KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.Enter, KeyCode.Escape].includes(evt.keyCode)) {
+          evt.preventDefault()
+          const activeCell = $('div.editable-datatable table td.selectedCell')
           if (activeCell.length > 0) {
-            let newCell = null;
+            let newCell = null
             switch (evt.keyCode) {
               case KeyCode.DownArrow:
-                newCell = activeCell.parent().next().children().eq(activeCell.index());
-                break;
+                newCell = activeCell.parent().next().children().eq(activeCell.index())
+                break
               case KeyCode.UpArrow:
-                newCell = activeCell.parent().prev().children().eq(activeCell.index());
-                break;
+                newCell = activeCell.parent().prev().children().eq(activeCell.index())
+                break
               case KeyCode.RightArrow:
-                newCell = activeCell.next('td');
-                break;
+                newCell = activeCell.next('td')
+                break
               case KeyCode.LeftArrow:
-                newCell = activeCell.prev('td');
-                break;
+                newCell = activeCell.prev('td')
+                break
               case KeyCode.Enter:
-                newCell = activeCell.parent().next().children().eq(activeCell.index());
-                break;
+                newCell = activeCell.parent().next().children().eq(activeCell.index())
+                break
               case KeyCode.Escape:
-                break;
+                break
             }
 
             if (newCell !== null) {
               newCell.trigger('click')
-              scrollIntoView(newCell, "div.editable-datatable > div.v-data-table__wrapper")
+              scrollIntoView(newCell, 'div.editable-datatable > div.v-data-table__wrapper')
             }
           }
-        } else {
-          if (!selectedCell.value.render) {
-            selectedCell.value.render = true
-          }
+        } else if (!selectedCell.value.render) {
+          selectedCell.value.render = true
         }
-      });
+      })
     })
   }
 
@@ -260,10 +278,10 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
     clearSelectionAndReload,
     updateSelectedCell,
     resetSelectedCell,
-    validateAndUpdateRow,
+    updateRowFunc,
     closeEditor,
     fetchDatatableFunc
   }
 }
 
-export default useDataTable;
+export default useDataTable

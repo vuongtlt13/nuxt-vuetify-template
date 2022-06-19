@@ -1,14 +1,14 @@
-import { DataOptions, DataTableHeader } from 'vuetify';
 import { cloneObject, findIndexInHeader } from '~/utils';
 import { $silentAxios } from '~/utils/api';
+import { FetchDatatableOption } from "~/types";
 
 export const BaseService = {
-  async fetchData (url: string, options: DataOptions, keyword: string | null, headers: DataTableHeader[], params?: any, action?: string) {
-    const clone = cloneObject(options);
-    const { page, itemsPerPage, sortBy, sortDesc } = clone
-    keyword = (keyword || "").trim()
+  async fetchData(url: string, fetchDataOption: FetchDatatableOption) {
+    const clone = cloneObject(fetchDataOption.options);
+    const {page, itemsPerPage, sortBy, sortDesc} = clone
+    const keyword = (fetchDataOption.keyword || "").trim()
     let finalSortBy = sortBy.map((value: string) => {
-      return findIndexInHeader(value, headers)
+      return findIndexInHeader(value, fetchDataOption.headers)
     })
     let finalSortDesc = sortDesc.map((value: boolean) => {
       return value ? "desc" : "asc"
@@ -25,24 +25,26 @@ export const BaseService = {
       ipp: itemsPerPage,
       sb: finalSortBy,
       sd: finalSortDesc,
-      ...params,
+      ...fetchDataOption.params,
     }
 
-    if (action) fetchParams.action = action;
+    if (fetchDataOption.action) fetchParams.action = fetchDataOption.action;
 
-    return await $silentAxios.get(url, {
-      params: fetchParams
-    }).then((resp) => {
-      if (!action) {
-        let total = resp.data.data.recordsFiltered;
-        let items = resp.data.data.items;
-        let options = resp.data.data.options;
-        let extra = resp.data.data.extra;
-        return { total, items, options, extra }
-      } else {
-        let url = $silentAxios.defaults.baseURL + `download/export/${resp.data.data.link}`
-        window.open(url, '_blank')
-      }
-    })
+    return await $silentAxios
+      .get(url, {
+        params: fetchParams
+      })
+      .then((resp) => {
+        if (!fetchDataOption.action) {
+          let total = resp.data.data.recordsFiltered;
+          let items = resp.data.data.items;
+          let options = resp.data.data.options;
+          let extra = resp.data.data.extra;
+          return {total, items, options, extra}
+        } else {
+          let url = $silentAxios.defaults.baseURL + `download/export/${resp.data.data.link}`
+          window.open(url, '_blank')
+        }
+      })
   },
 }

@@ -6,10 +6,10 @@
   >
     <v-autocomplete
       v-model="innerValue"
+      :error-messages="v.errors"
       :items="items"
       :loading="isLoading"
       :search-input.sync="search"
-      :error-messages="v.errors"
       :success="v.valid && v.validated && v.dirty && showSuccess"
       v-bind="$attrs"
       v-on="$listeners"
@@ -29,21 +29,21 @@ import { DataOptions } from 'vuetify';
 export default defineComponent({
   name: 'ValidationAutoComplete',
   props: {
-    rules: { type: [Object, String], default: '' },
-    showSuccess: { type: Boolean, default: true },
-    name: { type: String, required: true },
-    value: { type: [String, Number], default: '' },
-    delay: { type: Number, default: 320 },
-    fetchFn: { type: Function, require: true },
+    rules: {type: [Object, String], default: ''},
+    showSuccess: {type: Boolean, default: true},
+    name: {type: String, required: true},
+    value: {type: [String, Number], default: ''},
+    delay: {type: Number, default: 320},
+    fetchFn: {type: Function, require: true},
     fetchData: {
       type: Object, default: () => {
         return {}
       }
     },
-    reducer: { type: Function, require: true },
-    limit: { type: Number, default: 25 }
+    reducer: {type: Function, require: true},
+    limit: {type: Number, default: 25}
   },
-  setup (props) {
+  setup(props) {
     const innerValue = useVModel(props, 'value')
     const search = ref('');
     const isLoading = ref(false);
@@ -69,9 +69,14 @@ export default defineComponent({
             } as DataOptions
 
             // @ts-ignore
-            props.fetchFn(options, currentValue || '', [], props.fetchData)
+            props.fetchFn({
+              options: options,
+              keyword: currentValue || '',
+              headers: [],
+              params: props.fetchData
+            })
               .then((resp: any) => {
-                const { items } = resp
+                const {items} = resp
                 entries.value = items;
               })
               .finally(() => {
@@ -91,7 +96,7 @@ export default defineComponent({
     }
   },
   computed: {
-    items (): any[] {
+    items(): any[] {
       return this.entries.map(this.reducer!)
     }
   }

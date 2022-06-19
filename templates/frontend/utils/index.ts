@@ -6,12 +6,7 @@ import { $redirect } from '~/utils/redirect'
 import { $store } from '~/utils/store'
 import { DataTableHeader } from 'vuetify';
 import $ from 'jquery';
-import {
-  AxiosOption,
-  DataTableValidateAndUpdateRowCallbackFunc,
-  DataTableValidateAndUpdateRowFunc,
-  SelectedCellDataTable
-} from '~/types';
+import { AxiosOption, DataTableUpdateRowCallbackFunc, DataTableUpdateRowFunc, SelectedCellDataTable } from '~/types';
 import { $axios } from '~/utils/api';
 import { $error } from '~/utils/error';
 
@@ -22,7 +17,7 @@ import { $error } from '~/utils/error';
  * @param  {String} key
  * @return {String|undefined}
  */
-export function cookieFromRequest (req: any, key: any) {
+export function cookieFromRequest(req: any, key: any) {
   if (!req.headers.cookie) {
     return
   }
@@ -39,7 +34,7 @@ export function cookieFromRequest (req: any, key: any) {
 /**
  * https://router.vuejs.org/en/advanced/scroll-behavior.html
  */
-export function scrollBehavior (to: any, _: any, savedPosition: any) {
+export function scrollBehavior(to: any, _: any, savedPosition: any) {
   if (savedPosition) {
     return savedPosition
   }
@@ -47,12 +42,12 @@ export function scrollBehavior (to: any, _: any, savedPosition: any) {
   let position = {}
 
   if (to.matched.length < 2) {
-    position = { x: 0, y: 0 }
+    position = {x: 0, y: 0}
   } else if (to.matched.some((r: any) => r.components.default.options.scrollToTop)) {
-    position = { x: 0, y: 0 }
+    position = {x: 0, y: 0}
   }
   if (to.hash) {
-    position = { selector: to.hash }
+    position = {selector: to.hash}
   }
 
   return position
@@ -109,7 +104,7 @@ export const showNotificationFromResponse = (response: AxiosResponse) => {
 }
 
 export const showNotificationFromErrorResponse = (err: any, axiosOpts?: AxiosOption) => {
-  const resp = (err.response || { data: {} }) as AxiosResponse
+  const resp = (err.response || {data: {}}) as AxiosResponse
   if (resp.status >= HttpCode.SERVER_ERROR) {
     if (axiosOpts?.notifyWhenError)
       Vue.notify({
@@ -140,8 +135,7 @@ export const showNotificationFromErrorResponse = (err: any, axiosOpts?: AxiosOpt
         duration: NOTIFICATION_DURATION
       })
 
-    const error = ((resp.data || {}).data || {}).error || null;
-
+    const error = (resp.data || {}).error || null;
     if (typeof error === 'object' && error !== null && error.code !== undefined) {
       let extra = {};
       $error({
@@ -182,7 +176,7 @@ export const findIndexInHeader = (value: string, headers: DataTableHeader[]) => 
   return -1;
 }
 
-export const DefaultValidateAndUpdateRowCallback: DataTableValidateAndUpdateRowCallbackFunc = (
+export const DefaultUpdateRowCallback: DataTableUpdateRowCallbackFunc = (
   invalid: boolean,
   item: any,
   axiosOpts?: AxiosOption
@@ -196,25 +190,26 @@ export const DefaultValidateAndUpdateRowCallback: DataTableValidateAndUpdateRowC
   })
 }
 
-export const makeValidateAndUpdateRowDatatableFunc = (
-  callback?: DataTableValidateAndUpdateRowCallbackFunc,
+export const makeUpdateRowDatatableFunc = (
+  callback?: DataTableUpdateRowCallbackFunc,
   axiosOpts?: AxiosOption
-): DataTableValidateAndUpdateRowFunc => {
-  let finalAxiosOpts = axiosOpts || {
-    notifyWhenSuccess: false
+): DataTableUpdateRowFunc => {
+  let finalAxiosOpts = {
+    notifyWhenSuccess: false,
+    ...axiosOpts
   }
 
   return (invalid: boolean, item: any, selectedCell: SelectedCellDataTable, axiosOpts?: AxiosOption) => {
     let _finalAxiosOpts = {
       ...finalAxiosOpts,
-      axiosOpts
+      ...axiosOpts
     }
     if (!invalid) {
       let oldValue = item[selectedCell.column];
       let newValue = selectedCell.value;
       if (oldValue == newValue) return;
       item[selectedCell.column] = selectedCell.value
-      let finalCallback: DataTableValidateAndUpdateRowCallbackFunc = callback || DefaultValidateAndUpdateRowCallback
+      let finalCallback: DataTableUpdateRowCallbackFunc = callback || DefaultUpdateRowCallback
       return finalCallback!(selectedCell.row, item, _finalAxiosOpts)
         .then((resp) => {
           item[selectedCell.column] = resp.data.data[selectedCell.column]

@@ -18,6 +18,7 @@ export interface AxiosOption {
   notifyWhenSuccess?: boolean,
   notifyWhenError?: boolean
   disableRedirect?: boolean
+  overlay?: boolean
 }
 
 export type StringMap<T> = {
@@ -39,11 +40,20 @@ export interface SelectedCellDataTable {
   render: boolean
 }
 
-export type DataTableValidateAndUpdateRowFunc = (invalid: boolean, item: any, selectedCell: SelectedCellDataTable, axiosOpts?: AxiosOption) => Promise<any> | undefined;
+export type DataTableUpdateRowFunc = (invalid: boolean, item: any, selectedCell: SelectedCellDataTable, axiosOpts?: AxiosOption) => Promise<any> | undefined;
 
-export type DataTableValidateAndUpdateRowCallbackFunc = (invalid: boolean, item: any, axiosOpts?: AxiosOption) => Promise<any>;
+export type DataTableUpdateRowCallbackFunc = (invalid: boolean, item: any, axiosOpts?: AxiosOption) => Promise<any>;
 
-export type FetchDatatableFunc = (options: DataOptions, keyword: string, headers: DataTableHeader[], params?: any, action?: string) => Promise<any>
+export interface FetchDatatableOption {
+  options: DataOptions
+  keyword: string | null
+  headers: DataTableHeader[]
+  params?: any
+  action?: string
+}
+
+export type FetchDatatableFunc = (fetchDataOption: FetchDatatableOption) => Promise<any>
+
 
 export interface DataTableHandler {
   items: Ref<any[]>
@@ -63,7 +73,12 @@ export interface DataTableHandler {
   clearSelectionAndReload: (delay?: boolean) => void
   updateSelectedCell: (row: any, column: any) => void
   resetSelectedCell: () => void
-  validateAndUpdateRow: DataTableValidateAndUpdateRowFunc | undefined
+  updateRowFunc: DataTableUpdateRowFunc | undefined
   closeEditor: () => void
   fetchDatatableFunc: (loading: Ref, options: DataOptions) => void
+}
+
+export interface SummaryInfo {
+  name: string,
+  value: any
 }

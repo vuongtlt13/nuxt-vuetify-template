@@ -3,45 +3,45 @@
     <v-data-table
       v-model="datatableHandler.selectedRows.value"
       :class="dataTableClasses"
-      :height="height"
       :headers="finalHeaders"
-      :items="datatableHandler.items.value"
+      :height="height"
       :item-key="itemKey"
-      :options.sync="options"
-      fixed-header
-      :server-items-length="datatableHandler.totalItem.value"
-      :loading="loading"
-      :single-select="singleSelect"
-      :page.sync="page"
+      :items="datatableHandler.items.value"
       :items-per-page="datatableHandler.itemsPerPage.value"
-      :show-select="showSelect"
+      :loading="loading"
       :multi-sort="multiSort"
+      :options.sync="datatableHandler.options.value"
+      :page.sync="page"
+      :server-items-length="datatableHandler.totalItem.value"
+      :show-select="showSelect"
+      :single-select="singleSelect"
+      :style="dStyle"
+      fixed-header
       hide-default-footer
-      @page-count="pageCount = $event"
-      @click:row="selectOrUnselectRow"
       v-bind="$attrs"
       v-on="$listeners"
-      :style="dStyle"
+      @page-count="pageCount = $event"
+      @click:row="selectOrUnselectRow"
     >
       <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
         <slot :name="slot" v-bind="scope"/>
       </template>
-      <template v-if="editable" v-for="column in editableColumns" #[`item.${column.value}`]="slotProps">
+      <template v-for="column in editableColumns" v-if="editable" #[`item.${column.value}`]="slotProps">
         <ValidationObserver
-          v-slot="{ invalid }"
-          v-if="shouldShowEditor(slotProps, datatableHandler.selectedCell, column)">
+          v-if="shouldShowEditor(slotProps, datatableHandler.selectedCell, column)"
+          v-slot="{ invalid }">
           <ValidationText
-            :width="column.width"
-            :rules="column.rules"
-            :name="column.value"
             v-model="datatableHandler.selectedCell.value.value"
+            :autofocus="true"
             :hide-details="true"
+            :name="column.value"
+            :rules="column.rules"
+            :width="column.width"
             dense
             single-line
-            @keydown.enter="datatableHandler.validateAndUpdateRow(invalid, slotProps.item, datatableHandler.selectedCell.value)"
-            @keydown.esc="datatableHandler.closeEditor"
             @focus="$event.target.select()"
-            :autofocus="true"
+            @keydown.enter="datatableHandler.updateRowFunc(invalid, slotProps.item, datatableHandler.selectedCell.value)"
+            @keydown.esc="datatableHandler.closeEditor"
           />
         </ValidationObserver>
         <span v-else>{{ slotProps.item[column.value] }}</span>
@@ -59,8 +59,8 @@
           v-if="paginate"
           v-model="page"
           :length="pageCount"
-          :total-visible="totalVisible"
           :style="pStyle"
+          :total-visible="totalVisible"
         />
       </v-col>
     </v-row>
@@ -69,14 +69,14 @@
 
 <script lang="ts">
 
-import { DataOptions, DataTableHeader } from 'vuetify'
+import { DataTableHeader } from 'vuetify'
 import { defineComponent, PropType, Ref, ref, watch } from '@nuxtjs/composition-api'
 import { DataTableHandler, EditableColumnDataTable, SelectedCellDataTable } from '~/types'
 import ValidationText from '~/components/validation/Text.vue';
 
 export default defineComponent({
   name: 'BaseDataTable',
-  components: { ValidationText },
+  components: {ValidationText},
   props: {
     datatableHandler: {
       type: Object as PropType<DataTableHandler>,
@@ -110,7 +110,7 @@ export default defineComponent({
       type: Boolean,
       default: () => true
     },
-    itemKey: { type: String, default: 'id' },
+    itemKey: {type: String, default: 'id'},
     headers: {
       type: Array as PropType<DataTableHeader[]>,
       default: () => {
@@ -138,15 +138,9 @@ export default defineComponent({
       default: true
     }
   },
-  setup (props) {
+  setup(props) {
     const page = ref(1)
     const pageCount = ref(0)
-    const options = ref<DataOptions>({
-      page: 1,
-      itemsPerPage: props.datatableHandler!.itemsPerPage.value,
-      sortBy: [],
-      sortDesc: []
-    } as unknown as DataOptions)
 
     const loading = ref(false)
 
@@ -159,29 +153,28 @@ export default defineComponent({
     //   props.datatableHandler!.fetchDatatableFunc(loading, options.value)
     // }
 
-    watch(options, (o, n) => {
-      props.datatableHandler!.fetchDatatableFunc(loading, options.value)
+    watch(props.datatableHandler!.options, (o, n) => {
+      props.datatableHandler!.fetchDatatableFunc(loading, props.datatableHandler!.options.value)
     })
 
-    watch(props.datatableHandler!.itemsPerPage, (currentValue) => {
-      options.value.itemsPerPage = currentValue
-    })
     watch(props.datatableHandler!.searchKeyword, (currentVal, oldVal) => {
       if (currentVal !== oldVal) {
         if (searchJob !== null) {
           clearTimeout(searchJob)
         }
+
         searchJob = setTimeout(() => {
-          props.datatableHandler!.fetchDatatableFunc(loading, options.value)
+          props.datatableHandler!.options.value.page = 1
+          props.datatableHandler!.fetchDatatableFunc(loading, props.datatableHandler!.options.value)
         }, props.searchDelay)
       }
     })
+
     watch(props.datatableHandler!.draw, () => {
-      props.datatableHandler!.fetchDatatableFunc(loading, options.value)
+      props.datatableHandler!.fetchDatatableFunc(loading, props.datatableHandler!.options.value)
     })
 
     return {
-      options,
       loading,
       pageCount,
       page,
@@ -191,11 +184,11 @@ export default defineComponent({
   },
 
   computed: {
-    finalHeaders (): DataTableHeader[] {
+    finalHeaders(): DataTableHeader[] {
       if (this.headers?.length > 0) return this.headers
       return this.datatableHandler!.headers
     },
-    dataTableClasses (): string {
+    dataTableClasses(): string {
       let classes = this.tableClasses
       if (this.editable) {
         classes = classes + " editable-datatable"
@@ -205,7 +198,7 @@ export default defineComponent({
   },
 
   methods: {
-    shouldShowEditor (props: any, selectedCell: Ref<SelectedCellDataTable>, column: any): boolean {
+    shouldShowEditor(props: any, selectedCell: Ref<SelectedCellDataTable>, column: any): boolean {
       return props.item.id == selectedCell.value.row
         && column.value === selectedCell.value.column
         && selectedCell.value.render
