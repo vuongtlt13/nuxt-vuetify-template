@@ -9,6 +9,7 @@
       :error-messages="v.errors"
       :items="items"
       :loading="isLoading"
+      :no-filter="true"
       :search-input.sync="search"
       :success="v.valid && v.validated && v.dirty && showSuccess"
       v-bind="$attrs"
@@ -22,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
+import { defineComponent, ref, toRef, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 import { DataOptions } from 'vuetify';
 
@@ -32,6 +33,7 @@ export default defineComponent({
     rules: {type: [Object, String], default: ''},
     showSuccess: {type: Boolean, default: true},
     name: {type: String, required: true},
+    initSearchValue: {type: String, default: ''},
     value: {type: [String, Number], default: ''},
     delay: {type: Number, default: 320},
     fetchFn: {type: Function, require: true},
@@ -46,9 +48,14 @@ export default defineComponent({
   setup(props) {
     const innerValue = useVModel(props, 'value')
     const search = ref('');
+    const initSearch = toRef(props, "initSearchValue")
     const isLoading = ref(false);
     const entries = ref<any[]>([])
     const currentTask = ref<any>(null)
+
+    watch(initSearch, () => {
+      search.value = initSearch.value || ""
+    })
 
     watch(search, (currentValue) => {
       if (props.fetchFn) {
