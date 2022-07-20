@@ -1,4 +1,4 @@
-import { createAxiosFromConfig } from '~/utils/api'
+import { $silentAxios, createAxiosFromConfig } from '~/utils/api'
 import { AxiosOption, FetchDatatableOption } from '~/types';
 import { BaseService } from '~/services/base-service';
 
