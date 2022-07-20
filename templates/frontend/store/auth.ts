@@ -22,7 +22,7 @@ export const getters = {
     const tokenInCookie = Cookies.get(TOKEN_KEY)
     return state.token || tokenInCookie
   },
-  check: (state: AuthState) => state.user && state.user.name
+  check: (state: AuthState) => state.user && (state.user.name || state.user.full_name)
 }
 
 // mutations
@@ -61,7 +61,7 @@ export const actions = {
     try {
       const { data } = await AuthService.fetchUserInfo()
 
-      commit('FETCH_USER_SUCCESS', data)
+      commit('FETCH_USER_SUCCESS', data.data)
     } catch (e) {
       Cookies.remove(TOKEN_KEY)
 
