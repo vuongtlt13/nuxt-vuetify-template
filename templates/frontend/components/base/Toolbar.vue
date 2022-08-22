@@ -10,6 +10,7 @@
         :items="items"
         :label="$t('datatable.sLengthMenu')"
         v-model:value="innerItemsPerPage"
+        :hide-details="true"
       ></v-select>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
