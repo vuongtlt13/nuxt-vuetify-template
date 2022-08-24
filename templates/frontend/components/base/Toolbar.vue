@@ -2,11 +2,14 @@
   <v-container fluid>
     <v-row
       no-gutters
+      class="ma-0"
     >
       <v-select
+        dense
+        hide-spin-buttons
         v-if="showLengthMenu"
         class="text-center"
-        style="max-width: 60px; font-size: 0.7rem"
+        style="max-width: 80px; font-size: 0.7rem; margin-top: 10px"
         :items="items"
         :label="$t('datatable.sLengthMenu')"
         v-model:value="innerItemsPerPage"
