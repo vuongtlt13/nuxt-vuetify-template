@@ -9,12 +9,13 @@
         hide-spin-buttons
         v-if="showLengthMenu"
         class="text-center"
-        style="max-width: 80px; font-size: 0.7rem; margin-top: 10px"
+        style="max-width: 80px; font-size: 0.7rem;"
         :items="items"
         :label="$t('datatable.sLengthMenu')"
         v-model:value="innerItemsPerPage"
         :hide-details="true"
       ></v-select>
+
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -116,6 +117,7 @@
       <v-spacer/>
       <v-text-field
         v-if="searchable"
+        dense
         v-model="innerSearch"
         :clearable="true"
         append-icon="mdi-magnify"
