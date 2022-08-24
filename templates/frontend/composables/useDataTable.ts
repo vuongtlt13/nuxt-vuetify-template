@@ -30,6 +30,8 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
   // store data of table
   const items = ref([])
 
+  const focused = ref(false)
+
   const extraData = ref({
     options: {}
   } as any)
@@ -90,6 +92,7 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
   const fetchExtraParams = ref<any>(option.initFetchExtraParams || {} as any)
 
   watch(fetchExtraParams, () => {
+    options.value.page = 1
     clearSelectionAndReload()
   }, {
     deep: true
@@ -222,6 +225,7 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
 
     $(function () {
       $('div.editable-datatable').off('click').on('click', 'table tbody tr td', changeActiveCell)
+
       $('body').off('keydown').on('keydown', (evt: any) => {
         if ([KeyCode.DownArrow, KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.Enter, KeyCode.Escape].includes(evt.keyCode)) {
           evt.preventDefault()
@@ -257,6 +261,17 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
           selectedCell.value.render = true
         }
       })
+
+      let table = $('div.editable-datatable table')[0];
+      window.addEventListener('click', function(e){
+        // @ts-ignore
+        focused.value = e.target !== null && table.contains(e.target);
+        // if (focused.value) {
+        //   console.log("Focused")
+        // } else {
+        //   console.log("Not Focused")
+        // }
+      });
     })
   }
 
@@ -269,6 +284,7 @@ const useDataTable = (option: UseDataTableOption): DataTableHandler => {
     selectedRows,
     selectedCell,
     draw,
+    focused,
     options,
     exportData,
     searchKeyword,

@@ -28,7 +28,7 @@
       </template>
       <template v-for="column in editableColumns" v-if="editable" #[`item.${column.value}`]="slotProps">
         <ValidationObserver
-          v-if="shouldShowEditor(slotProps, datatableHandler.selectedCell, column)"
+          v-if="shouldShowEditor(slotProps, datatableHandler.selectedCell, column, datatableHandler.focused.value)"
           v-slot="{ invalid }">
           <ValidationText
             v-model="datatableHandler.selectedCell.value.value"
@@ -198,10 +198,11 @@ export default defineComponent({
   },
 
   methods: {
-    shouldShowEditor(props: any, selectedCell: Ref<SelectedCellDataTable>, column: any): boolean {
+    shouldShowEditor(props: any, selectedCell: Ref<SelectedCellDataTable>, column: any, focused: boolean): boolean {
       return props.item.id == selectedCell.value.row
         && column.value === selectedCell.value.column
         && selectedCell.value.render
+        && focused
     }
   }
 })

@@ -64,6 +64,7 @@ export interface DataTableHandler {
   selectedRows: Ref<any>
   selectedCell: Ref<SelectedCellDataTable>
   draw: Ref<number>
+  focused: Ref<boolean>
   options: Ref<DataOptions>
   exportData: (action: string) => Promise<any>
   searchKeyword: Ref<any>
