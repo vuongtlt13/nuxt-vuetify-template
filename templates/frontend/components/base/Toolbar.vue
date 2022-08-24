@@ -25,7 +25,7 @@
             x-small
             v-bind="attrs"
             v-on="on"
-            class="my-auto toolbar-button"
+            class="mt-2 toolbar-button"
             @click="handleCreateFn"
           >
             <v-icon small>
@@ -35,6 +35,7 @@
         </template>
         <span>{{ $t('crud.add_new') }}</span>
       </v-tooltip>
+
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -44,7 +45,7 @@
             x-small
             v-bind="attrs"
             v-on="on"
-            class="my-auto toolbar-button"
+            class="mt-2 toolbar-button"
             @click="showImportDialog"
           >
             <v-icon small>
@@ -64,7 +65,7 @@
             x-small
             v-bind="attrs"
             v-on="on"
-            class="my-auto toolbar-button"
+            class="mt-2 toolbar-button"
             @click="handleRefreshFn(true)"
           >
             <v-icon small>
@@ -84,7 +85,7 @@
             x-small
             v-bind="attrs"
             v-on="on"
-            class="my-auto toolbar-button"
+            class="mt-2 toolbar-button"
             @click="handleDeleteFn"
           >
             <v-icon small>
@@ -94,6 +95,7 @@
         </template>
         <span>{{ $t('crud.delete') }}</span>
       </v-tooltip>
+
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -103,7 +105,7 @@
             x-small
             v-bind="attrs"
             v-on="on"
-            class="my-auto toolbar-button"
+            class="mt-2 toolbar-button"
             @click="selectAllFn"
           >
             <v-icon small>

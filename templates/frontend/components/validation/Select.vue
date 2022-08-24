@@ -11,7 +11,7 @@
       :success="v.valid && v.validated && v.dirty && showSuccess"
       v-bind="$attrs"
       v-on="$listeners"
-      style="padding-top: 9px"
+      style="margin: auto"
     ></v-select>
   </ValidationProvider>
 </template>
