@@ -19,7 +19,7 @@ import { defineComponent, ref, toRef, watch } from '@nuxtjs/composition-api'
 import { useVModel } from '@vueuse/core'
 
 export default defineComponent({
-  name: 'ValidationCheck',
+  name: 'ValidationCheckbox',
   props: {
     rules: { type: [Object, String], default: '' },
     showSuccess: { type: Boolean, default: false },

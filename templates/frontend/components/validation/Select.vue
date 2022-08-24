@@ -7,12 +7,11 @@
     <v-select
       :items="options"
       v-model="innerValue"
-      dense
       :error-messages="v.errors"
       :success="v.valid && v.validated && v.dirty && showSuccess"
       v-bind="$attrs"
       v-on="$listeners"
-      style="padding-top: 16px;"
+      style="padding-top: 9px"
     ></v-select>
   </ValidationProvider>
 </template>
