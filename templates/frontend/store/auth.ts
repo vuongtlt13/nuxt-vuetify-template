@@ -27,53 +27,60 @@ export const getters = {
 
 // mutations
 export const mutations = {
-  SET_TOKEN (state: AuthState, token: string) {
+  SET_TOKEN(state: AuthState, token: string) {
     state.token = token
   },
 
-  FETCH_USER_SUCCESS (state: AuthState, user: any) {
+  FETCH_USER_SUCCESS(state: AuthState, user: any) {
     state.user = user
   },
 
-  FETCH_USER_FAILURE (state: AuthState) {
+  FETCH_USER_FAILURE(state: AuthState) {
     state.token = null
   },
 
-  LOGOUT (state: AuthState) {
+  LOGOUT(state: AuthState) {
     state.user = null
     state.token = null
   },
 
-  UPDATE_USER (state: AuthState, { user }: any) {
+  UPDATE_USER(state: AuthState, {user}: any) {
     state.user = user
   }
 }
 
 // actions
 export const actions = {
-  saveToken ({ commit }: any, { token, remember }: { token: string, remember: boolean }) {
+  saveToken({commit}: any, {token, remember}: { token: string, remember: boolean }) {
     commit('SET_TOKEN', token)
 
-    Cookies.set(TOKEN_KEY, token, { expires: remember ? 365 : undefined })
+    Cookies.set(TOKEN_KEY, token, {expires: remember ? 365 : undefined})
   },
 
-  async fetchUser ({ commit }: any) {
+  removeToken({commit}: any) {
+    return new Promise((resolve) => {
+      Cookies.remove(TOKEN_KEY)
+      commit('LOGOUT')
+      resolve(true)
+    })
+  },
+
+  async fetchUser({commit}: any) {
     try {
-      const { data } = await AuthService.fetchUserInfo()
+      const {data} = await AuthService.fetchUserInfo()
 
       commit('FETCH_USER_SUCCESS', data.data)
     } catch (e) {
       Cookies.remove(TOKEN_KEY)
-
-      commit('FETCH_USER_FAILURE')
+      commit('LOGOUT')
     }
   },
 
-  updateUser ({ commit }: any, payload: any) {
+  updateUser({commit}: any, payload: any) {
     commit('UPDATE_USER', payload)
   },
 
-  async logout ({ commit }: any) {
+  async logout({commit}: any) {
     return await ($axios.create()).post('/logout').catch(() => {
     }).finally(
       () => {

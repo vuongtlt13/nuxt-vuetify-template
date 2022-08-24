@@ -122,8 +122,8 @@ export const showNotificationFromErrorResponse = (err: any, axiosOpts?: AxiosOpt
         duration: NOTIFICATION_DURATION
       })
     if (!axiosOpts?.disableRedirect) {
-      $store.dispatch('auth/logout').finally(() => {
-        $redirect('/')
+      $store.dispatch('auth/removeToken').finally(() => {
+        location.reload();
       })
     }
   } else {
@@ -267,5 +267,10 @@ export const printElement = (element: HTMLElement | string, cssLinks?: string[])
 
 export const downloadTemplate = (templateName: string) => {
   let fullUrl = `${$axios.defaults.baseURL}template/download/${templateName}`;
+  window.open(fullUrl, "_blank")
+}
+
+export const downloadFile = (templateName: string) => {
+  let fullUrl = `${$axios.defaults.baseURL}download/export/${templateName}`;
   window.open(fullUrl, "_blank")
 }

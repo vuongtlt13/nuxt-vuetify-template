@@ -8,12 +8,12 @@ import { AxiosOption } from '~/types';
 let $axios: NuxtAxiosInstance
 let $silentAxios: NuxtAxiosInstance
 
-export function initializeAxios (axiosInstance: NuxtAxiosInstance) {
+export function initializeAxios(axiosInstance: NuxtAxiosInstance) {
   $axios = axiosInstance
   $silentAxios = silentAxios()
 }
 
-export function addDefaultRequestInterception (axios: NuxtAxiosInstance) {
+export function addDefaultRequestInterception(axios: NuxtAxiosInstance, axiosOpts?: AxiosOption) {
   axios.interceptors.request.use((request: any) => {
     request.baseURL = process.env.apiUrl
 
@@ -38,11 +38,15 @@ export function addDefaultRequestInterception (axios: NuxtAxiosInstance) {
       request.data._method = 'DELETE'
     }
 
+    if (axiosOpts == undefined || axiosOpts.overlay) {
+      console.log("set overlay to true")
+      $store.dispatch('app/setOverlay', true)
+    }
     return request
   })
 }
 
-export function addDefaultResponseInterception (
+export function addDefaultResponseInterception(
   axios: NuxtAxiosInstance,
   axiosOpts?: AxiosOption
 ) {
@@ -53,23 +57,25 @@ export function addDefaultResponseInterception (
     ...axiosOpts
   }
   axios.interceptors.response.use((response: AxiosResponse) => {
+    $store.dispatch('app/setOverlay', false)
     if (axiosOpts!.notifyWhenSuccess) {
       showNotificationFromResponse(response)
     }
     return response
-  }, (error: any) => {
-    showNotificationFromErrorResponse(error, axiosOpts)
-    return Promise.reject(error)
+  }, (err: any) => {
+    $store.dispatch('app/setOverlay', false)
+    showNotificationFromErrorResponse(err, axiosOpts)
+    return Promise.reject(err)
   })
 }
 
 export const silentAxios = (axiosOpts?: AxiosOption) => {
   const newAxios = $axios.create()
-  addDefaultRequestInterception(newAxios)
   axiosOpts = {
     notifyWhenSuccess: false,
     ...axiosOpts
   }
+  addDefaultRequestInterception(newAxios, axiosOpts)
   addDefaultResponseInterception(newAxios, axiosOpts)
   return newAxios
 }
@@ -98,7 +104,7 @@ export const makeOptionFromResponse = (optionResp: any) => {
 
 export const createAxiosFromConfig = (axiosOpts?: AxiosOption) => {
   let axios = $axios
-  if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError || axiosOpts.disableRedirect)) {
+  if (axiosOpts && (!axiosOpts.notifyWhenSuccess || !axiosOpts.notifyWhenError || axiosOpts.disableRedirect || !axiosOpts.overlay)) {
     axios = silentAxios(axiosOpts)
   }
 
